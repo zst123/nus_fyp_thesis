@@ -3,38 +3,38 @@
 %\newcommand*{\DoubleSided}{} 
 
 \input{_global_settings.tex}
+\input{nusthesis_modification.tex}
+\input{nusthesis_eceugradtitle.tex}
 
 \begin{document}
 
-\title{We Are What We Eat: The Recipe of Success}
+\def\mytitle{EE4002R CA1 Report}
+\def\myauthor{Manzel Joseph Seet (A0234941E)}
+\def\mydegree{Bachelor of Engineering}
+\def\myfield{Department of Electrical and Computer Engineering}
+\def\mydegreeyear{AY 2022/2023}
+\def\mysupervisor{Assistant Professor Fong Xuanyao, Kelvin}
 
-\author{CHICKEN Rice}
-\prevdegrees{%
-  B.S., Culinary University}
-\degree{Doctor of Philosophy}
-\field{Cooking Science}
-\degreeyear{2021}
-\supervisor{Professor Hamburger STEAK}
+\title{\mytitle}
+\author{\myauthor}
+\degree{\mydegree}
+\field{\myfield}
+\degreeyear{\mydegreeyear}
+\supervisor{\mysupervisor}
 
-% only involve the examiners in the final submission
-\examiners{%
-  Associate Professor CHAR Kway Teow \\
-  Assistant Professor Yummy Bee Hoon CRAB \\
-  Professor BAK Kwa, Dessert University}
+\makeugradtitle
 
-\maketitle
-
-\declaredate{1 March 2021}
-\declaresign{\RootPicDir /signature.jpg} % remove this if you prefer to sign physically
-\declarationpage
+% \declaredate{1 March 2021}
+% \declaresign{\RootPicDir /signature.jpg} % remove this if you prefer to sign physically
+% \declarationpage
 
 \begin{frontmatter}
-  \dedicate{To my delicious friends}
+  \input{chapters/abstract.tex}
   \input{chapters/acknowledgments.tex}
   \tableofcontents 
-  \input{chapters/abstract.tex}
   \listoffigures
   \listoftables
+  \input{chapters/abbreviations.tex}
 \end{frontmatter}
 
 \input{chapters/ch-intro.tex}
@@ -46,10 +46,10 @@
 \bookmarksetup{startatroot}
 \printbibliography[heading=bibintoc]
 
+\input{chapters/ap-publication.tex} % optional to include your publication list
+
 \appendix
 \input{chapters/ap-recipes.tex}
 \input{chapters/ap-ingredients.tex}
-
-\input{chapters/ap-publication.tex} % optional to include your publication list
 
 \end{document}

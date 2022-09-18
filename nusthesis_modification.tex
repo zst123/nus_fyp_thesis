@@ -1,0 +1,42 @@
+% This file contains the modifications to the nusthesis.cls template
+
+% Reduce vertical spacing between chapter title
+\titlespacing*{\chapter}{0pt}{-12.5ex}{-3ex}
+
+% Redefine ABSTRACT
+% Change title to be same as chapter 
+\def\abstract{
+  \intendclearpage
+  \phantomsection\addcontentsline{toc}{chapter}{\abstractname}
+  \begin{alwayssingle}
+  \chapter*{\abstractname}
+  \begin{center}{
+  }
+  \vspace{.1in}
+  \end{center}
+}
+
+% Redefine ACKNOWLEDGEMENTS
+% Change title to be same as chapter
+\renewenvironment{acknowledgments}
+  {\intendclearpage
+   \phantomsection\addcontentsline{toc}{chapter}{\acknowledgename}
+   \begin{alwayssingle}
+   \chapter*{\acknowledgename}
+   \begin{center}
+   \end{center}
+  }
+  {\end{alwayssingle}}
+
+% Define LIST OF SYMBOLS AND ABBREVIATIONS
+\def\abbreviationsname{List of Abbreviations}
+
+\newenvironment{abbreviations}
+{\intendclearpage
+ \phantomsection\addcontentsline{toc}{chapter}{\abbreviationsname}
+ \begin{alwayssingle}
+ \chapter*{\abbreviationsname}
+ \begin{center}
+ \end{center}
+}
+{\end{alwayssingle}}

@@ -1,0 +1,63 @@
+% Title page for NUS ECE Undergraduate Final Year Project
+\def\makeugradtitle{
+{
+%\ssp
+%   \makeatletter
+%     \setlength{\@tempdima}{28pt}\advance\@tempdima-\baselineskip
+%     \parskip=\@tempdima minus 4pt
+%   \makeatother
+\begin{alwayssingle}
+%   \hrule height 0pt
+%   % Fix things so that they're vertically centered
+%   % \@tempdima = 2 * ((\stockheight-\textheight) / 2 - \uppermargin) - \topskip
+%     \@tempdima=\stockheight
+%     \advance\@tempdima-\textheight
+%     \advance\@tempdima-2\uppermargin
+%     \advance\@tempdima-\topskip
+%     \vspace{\@tempdima}
+%   \vfill
+  \let\footnotesize\small
+  \let\footnoterule\relax
+  \thispagestyle{empty}
+  \setcounter{page}{1}
+
+  \begin{center}
+
+    %% NUS LOGO
+    \vspace{1.2in}
+      \begin{figure}[!h]
+        \centering\includegraphics[height=2.8in]{pic/nus_logo.jpg}
+      \end{figure}
+    \vspace{-0.4in}
+
+    % Title
+    \textbf{\Large \mytitle} \\
+    \vspace{0.5in}
+
+    % Author
+    \textbf{Submitted by:} \\
+    \text{\myauthor} \\
+    \text{}\\
+    \textbf{Supervisor:} \\
+    \text{\mysupervisor} \\
+    \text{}\\
+
+    \vspace{0.5in}
+
+    % Department
+    National University of Singapore \\
+    \text{\myfield} \\
+    \text{\mydegreeyear} \\
+    \vspace{0.5in}
+
+    % Degree
+    In partial fulfillment of the \\
+    requirements for the Degree of \\
+    {\mydegree} \\ 
+  \end{center}
+  \vfill
+  \hrule height 0pt
+\end{alwayssingle}
+
+\setcounter{footnote}{0}
+}}
