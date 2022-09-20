@@ -13,6 +13,14 @@
 % Reduce vertical spacing between chapter title
 \titlespacing*{\chapter}{0pt}{-12.5ex}{-3ex}
 
+% Reduce vertical spacing between equations
+\AtBeginDocument{
+  \addtolength{\abovedisplayskip}{-2.5ex}
+  \addtolength{\abovedisplayshortskip}{-2.5ex}
+  \addtolength{\belowdisplayskip}{0ex}
+  \addtolength{\belowdisplayshortskip}{0ex}
+}
+
 % Redefine ABSTRACT
 % Change title to be same as chapter 
 \def\abstract{
