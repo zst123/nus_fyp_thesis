@@ -1,0 +1,17 @@
+\SetPicSubDir{my-framework}
+
+\chapter{Proposed Framework}
+\vspace{2em}
+
+% In this section, the proposed framework of the simulation backend is described.
+
+\section{Simulation \acsp{API}}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\linewidth]{\Pic{png}{simulation_backend_ca1}}
+  \caption{Simulation backend hierarchy}
+  \label{framework:fig:simulation_backend_ca1}
+\end{figure}
+
+The simulation backend is currently built up in LTSpice with the hierarchy in \autoref{framework:fig:simulation_backend_ca1}. The \ac{CBA} can be auto-generated using the Python generation stack by passing in parameters like the number wordlines/bitlines and resistance states. After the necessary files are generated, the simulation stack exposes \acp{API}. The simulation \acp{API} is designed to be easily swapped with the actual hardware \acp{API} and runs interoperably with the algorithms at higher levels.

@@ -1,0 +1,35 @@
+\SetPicSubDir{my-methodology}
+
+\chapter{Methodology}
+\vspace{2em}
+
+\section{Splitting techniques for transpose \ac{MAC} operation}
+
+Splitting technique must also account for the directional voltage drive, namely wordline drive and bitline drive, used to perform the transpose operation as mentioned in \emph{\autoref{sec:forward_and_transpose_mac_operations}}. The following methods are proposed to accommodate the transpose operation.
+
+Currently, only a single \ac{CBA} is available in the lab due to the manufacturing difficulties. \autoref{methodology:fig:transpose_three_split} assumes the constraint of using only one \ac{CBA} and adjacent devices. With the column-wise $G_{11A}, G_{11B}$ used for the wordline drive and the row-wise $G_{11A}, G_{11B}$ used during bitline drive, this results in three memristors can be mapped to a single number. Having adjacent devices makes it logistically convenient at the expense of taking up $1.5\times$ the memory area due to a duplicated $G_{11B}$ as highlighted in yellow.
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_three_split}}
+    \caption{Three device splitting method within one \ac{CBA} to accommodate the transpose operation.}
+    \label{methodology:fig:transpose_three_split}
+  \end{figure}
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_two_cba}}
+    \caption{Splitting across two \ac{CBA} to accommodate the transpose operation.}
+    \label{methodology:fig:transpose_two_cba}
+  \end{figure}
+
+\autoref{methodology:fig:transpose_two_cba} is a situation where multiple \acsp{CBA} are used in parallel without constraints. Two \acsp{CBA} can be stacked, with the first array holding the positive weights $G_{11A}$ and the second array holding the absolute of the negative weights $G_{11B}$. However, this needs a duplicated voltage drive $V_1$ and increases complexity of the hardware. Furthermore, in terms of manufacturability, it may not be possible to achieve two \acsp{CBA} prototypes within the timeframe of this project thesis. 
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_segment}}
+    \caption{Segmenting one \ac{CBA} and multiplexing each segment to accommodate the transpose operation.}
+    \label{methodology:fig:transpose_segment}
+  \end{figure}
+
+A middle ground will be to segment the \ac{CBA} into equal regions and view it as multiple smaller arrays. \autoref{methodology:fig:transpose_segment} segments the \ac{CBA} into four. The two segments, whose wordlines and bitlines do not overlap, can be used simultaneously. This makes the software interface more complicated since only 2 out of 4 segments can be used at a single time interval, which effectively cuts the computational throughput in half.

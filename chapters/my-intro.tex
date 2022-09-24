@@ -1,0 +1,39 @@
+\SetPicSubDir{my-intro}
+
+\chapter{Introduction}
+\vspace{2em}
+
+\section{Computation-in-memory architecture}
+
+There has been growing interest in neuromorphic computing to fuel the next generation of artificial intelligence. As such, there is high demand for faster computational power not only for deploying but also for training \ac{ANN} models. Widely used digital computers implement the von Neumann architecture where computation and memory units are separate. It is found that the transferring of data between the computing and memory storage takes up the majority of the \acs{CPU} time which not only limits the maximum speed achievable but also consumes 100 times more power in comparison to the actual floating-point computation itself \cite{Zou_Xu_Chen_Yan_Han_2021}. This has given rise to the von Neumann bottleneck. Hence, there is a great engineering motivation towards realising alternative methods to perform the computation on more efficient, environmentally-friendly and low-powered hardware. According to \citet{Strubell_Ganesh_McCallum_2019} \cite{Strubell_Ganesh_McCallum_2019}, it was measured that the carbon footprint to train a \acs{BERT} model is comparable to a trans-American airplane flight. To combat this, there has been significant research work looking into computation-in-memory architectures which performs the computations directly at the memory location itself. In particular, the implementation of a memristor \ac{CBA} architecture to do computation in the analog domain is a promising pathway which will be the focus in this thesis.
+
+\newpage
+
+\section{Research Objective}
+
+This section describes the main research objectives as of this CA1 progress report:
+
+\begin{enumerate}
+  \item How might we make use of the memristor crossbar array to perform common operation for neural networks?
+  \item To build up the simulation of crossbar array, and create an abstraction layer to prototype the mapping of neural network architecture.
+\end{enumerate}
+
+A simulation backend is proposed to validate the functionality of possible hardware architectures and implementation of hardware interface circuit to a memristive \ac{CBA}. With the goal of allowing more mathematical operations to be accelerated on the \ac{CBA}, the operations of interest are those that are commonly used in neural networks deployment as well as training. There is also the focus of creating a low-power environment, since many \ac{ANN} applications are moving towards being deployed on the edge.
+
+As illustrated in \autoref{intro:fig:abstraction_layers}, the backend is abstracted in a Python package to closely resemble the functionality of the actual \ac{CBA}. The aim is to allow for the low-level abstraction layer to maintain interoperability when redeploying the code on future developments of the hardware without affecting the high-level software stack in the future. 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{\Pic{png}{abstraction_layers}}
+  \caption{Proposed abstraction layer with simulation backend}
+  \label{intro:fig:abstraction_layers}
+\end{figure}
+
+% \section{Thesis Synopsis}
+
+%% TODO:
+% The rest of this thesis is organized as follows. 
+% In \autoref{ch:review}, we conduct a literature review. 
+% \autoref{ch:rice} provides the study on rice. 
+% \autoref{ch:noodle} describes noodles. 
+% We conclude the entire thesis as well as discuss further directions for future research in \autoref{ch:concl}.
