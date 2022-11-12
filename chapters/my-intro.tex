@@ -12,30 +12,34 @@ There has been growing interest in neuromorphic computing to fuel the next gener
 \newpage
 
 \section{Research Objective}
+\noindent This section describes the main research objectives of this thesis:
 
-This section describes the main research objectives as of this CA1 progress report:
+\noindent 1. How might we make use of the memristor crossbar array to perform common operation for neural networks?
+  \begin{itemize}
+    \item With the focus of many \ac{ANN} applications moving towards being deployed on the edge, the goal is to design the supporting circuitry of the \ac{CBA} to perform as many commonly used in \ac{ANN} operations for deployment as well as training.
+  \end{itemize}
 
-\begin{enumerate}
-  \item How might we make use of the memristor crossbar array to perform common operation for neural networks?
-  \item To build up the simulation of crossbar array, and create an abstraction layer to prototype the mapping of neural network architecture.
-\end{enumerate}
+\noindent 2. To build up the simulation of crossbar array, and create an abstraction layer to prototype the mapping of neural network architecture.
+  \begin{itemize}
+    \item A simulation backend to verify and validate the functionality of the proposed hardware architectures and implementation of hardware interface circuit to the \ac{CBA}.
+  \end{itemize}
 
-A simulation backend is proposed to validate the functionality of possible hardware architectures and implementation of hardware interface circuit to a memristive \ac{CBA}. With the goal of allowing more mathematical operations to be accelerated on the \ac{CBA}, the operations of interest are those that are commonly used in neural networks deployment as well as training. There is also the focus of creating a low-power environment, since many \ac{ANN} applications are moving towards being deployed on the edge.
+\section{Thesis Synopsis}
 
-As illustrated in \autoref{intro:fig:abstraction_layers}, the backend is abstracted in a Python package to closely resemble the functionality of the actual \ac{CBA}. The aim is to allow for the low-level abstraction layer to maintain interoperability when redeploying the code on future developments of the hardware without affecting the high-level software stack in the future. 
+\noindent
+The rest of this thesis is organized as follows:
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.9\linewidth]{\Pic{png}{abstraction_layers}}
-  \caption{Proposed abstraction layer with simulation backend}
-  \label{intro:fig:abstraction_layers}
-\end{figure}
-
-% \section{Thesis Synopsis}
-
-%% TODO:
-% The rest of this thesis is organized as follows. 
-% In \autoref{ch:review}, we conduct a literature review. 
-% \autoref{ch:rice} provides the study on rice. 
-% \autoref{ch:noodle} describes noodles. 
-% We conclude the entire thesis as well as discuss further directions for future research in \autoref{ch:concl}.
+\begin{itemize}
+  \item
+  In the \nameref{ch:introduction}, an overview of the background issue is introduced and the main contribution to the topic is explained through the research objectives.
+  \item
+  The \nameref{ch:background} section provides an introduction to the physical properties of the hardware device that is of interest to be used throughout this project.
+  \item
+  The \nameref{ch:methodology} section explains the different considerations and proposes hardware architecture designs to tackle it.
+  \item
+  In the \nameref{ch:framework} section, the simulation stack is built with the proposed hardware design mapped onto the backend for hardware verification
+  \item
+  The \nameref{ch:results} section demonstrates the operations and principles of the final hardware accelerator design.
+  \item
+  Lastly, the \nameref{ch:conclusion} section summarises the contributions of thesis, learning outcomes and identifies areas of future research.
+\end{itemize}
