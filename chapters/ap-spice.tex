@@ -1,0 +1,100 @@
+\SetPicSubDir{appendix}
+
+\chapter{Comparing LTspice \& Hspice}
+\label{appendix:spice}
+
+%%
+\section{Overview of SPICE environment}
+
+In \autoref{ch:framework} \nameref{ch:framework}, the simulation backend is designed to be cross-compatible with both LTspice and Hspice.
+Hspice is a commercial software and is extremely fast; however, the lack of a graphical interface is a barrier to rapid prototyping for the whole team. LTspice is a free software and is commonly taught in undergraduate curricula due to its graphical interface and ease of use.
+
+With this, it was decided that being able to generate cross-compatible netlists for software interoperability will be advantageous to address the initial phase of prototyping and debugging, before scaling up into large batch simulations.
+This appendix aims to inform the reader on the key differences between the two and note the cross-compatibility features built into the simulation backend.
+
+%%
+\section{Differences in SPICE netlist syntax}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{spice_syntax_differences}}
+    \caption{Average time taken per simulation}
+    \label{appendix:fig:spice_syntax_differences}
+\end{figure}
+
+Both LTSpice and HSpice netlists have non-standard SPICE syntax. \autoref{appendix:fig:spice_syntax_differences} highlights the LTspice-specific syntax in red, and Hspice-specific syntax in green.
+\\
+
+\begin{description}[noitemsep,nolistsep]
+    \item[Passing parameters] The indicator {\verb|params: |} can be omitted to make it cross-compatible.
+    \item[Parameter substitution] Parameters can be referenced using quotations {\verb|''|} instead of braces {\verb|{}|} to make it cross-compatible.
+    \item[Simulation settings] LTspice requires {\verb|.backanno|} to run the simulation, while Hspice requires {\verb|.OPTIONS POST=2 nomod|} to print out the output data from the simulation into a file.
+\end{description}
+
+%%
+\section{Performance benchmarks}
+
+\begin{table}[h]
+    \centering
+    \begin{minipage}{.4\linewidth}
+        \begin{tabular}{|c|c|}
+            \hline
+            \multicolumn{2}{|c|}{\textbf{100 simulations in...}} \\
+            \hline
+            LTSpice (sec) & HSpice (sec) \\ 
+            \hline
+            \hline
+            107.056 & 26.626 \\ 
+            \hline
+            106.157 & 25.938 \\ 
+            \hline
+            107.213 & 26.143 \\ 
+            \hline
+            106.804 & 26.002 \\ 
+            \hline
+            107.329 & 26.489 \\
+            \hline
+        \end{tabular} 
+    \end{minipage}%
+    \begin{minipage}{.5\linewidth}
+        \begin{tabular}{|c|c||c|}
+            \hline
+            \multicolumn{3}{|c|}{\textbf{Average time taken per simulation}} \\
+            \hline
+            LTSpice (sec) & HSpice (sec) & \hl{Speed-up} \\ 
+            \hline
+            \hline
+            1.069118 & 0.262396 & \hl{$4.07 \times$}\\ 
+            \hline
+        \end{tabular} 
+    \end{minipage} 
+    \caption{Sample time taken to run simulations in each environment}
+    \label{appendix:table:spice_benchmark}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\linewidth]{\Pic{png}{spice_benchmark}}
+    \caption{Average time taken per simulation}
+    \label{appendix:fig:spice_benchmark}
+\end{figure}
+
+\noindent The benchmark results are tabulated in \autoref{appendix:table:spice_benchmark}. As seen in \autoref{appendix:fig:spice_benchmark}, Hspice is $4.07 \times$ faster than LTspice for batch simulation.
+
+\text{}
+
+\noindent The following parameters were set for both instances for the benchmark:
+
+\begin{itemize}[noitemsep,nolistsep]
+    \item    Simulation with a single instance and enabling multi-threads
+    \item    Circuit used is the $8 \times 8$ crossbar with hardcoded voltage inputs.
+    \item    Full transient analysis was simulated for 10 milliseconds
+    \item    Running in headless mode for batch simulation 
+\end{itemize}
+
+\text{}
+
+\noindent The main overhead in LTspice is the simulation itself. While it supports multi-threaded simulations, it does not use up the maximum resources of the \ac{CPU}. On the contrary, Hspice launches more processes to perform more computations concurrently. 
+As Hspice is a paid software, the main overhead when launching Hspice is the authentication with the license server. Hence, it is recommended that latency from the workstation to the license server is minimised. 
+
+%%
