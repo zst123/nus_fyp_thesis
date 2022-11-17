@@ -5,33 +5,224 @@
 
 \vspace{2em}
 
-\section{Splitting techniques for transpose \ac{MAC} operation}
+\section{Dual \ac{CBA} Approach}
+\label{sec:methodology:dual_cba_approach}
 
-Splitting technique must also account for the directional voltage drive, namely wordline drive and bitline drive, used to perform the transpose operation as mentioned in \emph{\autoref{sec:forward_and_transpose_mac_operations}}. The following methods are proposed to accommodate the transpose operation.
+Previously it was mentioned that each \ac{CBA} acts like an memory array to perform the \ac{MAC} operations with. Therefore, minimally a single \ac{CBA} is used to store the array. 
+However, in this project, two \acp{CBA} are used to store a single array instead. This dual \ac{CBA} approach is explained in the following subsections.
 
-Currently, only a single \ac{CBA} is available in the lab due to the manufacturing difficulties. \autoref{methodology:fig:transpose_three_split} assumes the constraint of using only one \ac{CBA} and adjacent devices. With the column-wise $G_{11A}, G_{11B}$ used for the wordline drive and the row-wise $G_{11A}, G_{11B}$ used during bitline drive, this results in three memristors can be mapped to a single number. Having adjacent devices makes it logistically convenient at the expense of taking up $1.5\times$ the memory area due to a duplicated $G_{11B}$ as highlighted in yellow.
+\subsection{Negative number representation}
+\label{sec:methodology:negative_number_representation}
 
-  \begin{figure}[!htbp] 
-    \centering
-    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_three_split}}
-    \caption{Three device splitting method within one \ac{CBA} to accommodate the transpose operation.}
-    \label{methodology:fig:transpose_three_split}
-  \end{figure}
+Since the memristor conductance can only be positive, the matrix that is stored in the physical \ac{CBA} memory must only be positive. A method to map a negative number is to split up the number across two memristor devices \cite{Sun_Ielmini_2022}. 
 
-  \begin{figure}[!htbp] 
-    \centering
-    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_two_cba}}
-    \caption{Splitting across two \ac{CBA} to accommodate the transpose operation.}
-    \label{methodology:fig:transpose_two_cba}
-  \end{figure}
+There are various types of splitting methods which come with their own pros and cons. These methods were explored as well and the details are explained in \fullref{appendix:cbalayout}.
 
-\autoref{methodology:fig:transpose_two_cba} is a situation where multiple \acsp{CBA} are used in parallel without constraints. Two \acsp{CBA} can be stacked, with the first array holding the positive weights $G_{11A}$ and the second array holding the absolute of the negative weights $G_{11B}$. However, this needs a duplicated voltage drive $V_1$ and increases complexity of the hardware. Furthermore, in terms of manufacturability, it may not be possible to achieve two \acsp{CBA} prototypes within the timeframe of this project thesis. 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{\Pic{png}{method_dual_cba}}
+  \caption{Storing a single weight across two \acp{CBA}}
+  \label{methodology:fig:method_dual_cba}
+\end{figure}
 
-  \begin{figure}[!htbp] 
-    \centering
-    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_segment}}
-    \caption{Segmenting one \ac{CBA} and multiplexing each segment to accommodate the transpose operation.}
-    \label{methodology:fig:transpose_segment}
-  \end{figure}
+\noindent
+This project will focus on having two separate \acp{CBA}. We shall consider $\mathbf{G = G_{A} - G_{B}}$, where the device conductances $\mathbf{G_{A}}$ and $\mathbf{G_{B}}$ are arrays with only positive values. 
 
-A middle ground will be to segment the \ac{CBA} into equal regions and view it as multiple smaller arrays. \autoref{methodology:fig:transpose_segment} segments the \ac{CBA} into four. The two segments, whose wordlines and bitlines do not overlap, can be used simultaneously. This makes the software interface more complicated since only 2 out of 4 segments can be used at a single time interval, which effectively cuts the computational throughput in half.
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{method_gnd_cba}}
+  \caption{The outputs are tied together such that the summation of individual currents from both \acp{CBA} gives the actual result}
+  \label{methodology:fig:method_gnd_cba}
+\end{figure}
+
+\noindent
+In \autoref{methodology:fig:method_dual_cba} and \autoref{methodology:fig:method_gnd_cba}, $CBA1$ represents the positive component, while $CBA2$ represents the negative component. Note that the input voltage vector $\mathbf{V}$ is passed into $CBA1$ but the inverted voltage vector $\mathbf{-V}$ is passed into $CBA2$. 
+
+$$
+\begin{aligned}
+\text{Let }
+\mathbf{V} \cdot \mathbf{G_A} &= \mathbf{I_A} \\
+\text{and }
+\mathbf{-V} \cdot \mathbf{G_B} &= -\mathbf{I_B} \\
+\end{aligned}
+$$
+
+\noindent
+To read the result, the outputs are tied together. The following behaviour occurs by law of \ac{KCL} (assuming the error due to the shunt resistor is negligible since $R_{shunt} \cong 0 \Omega$):
+
+$$
+\begin{aligned}
+\mathbf{I} &= \mathbf{I_A} + \mathbf{I_B} \\
+\mathbf{I} &= \left(\mathbf{V} \cdot \mathbf{G_A}\right) + \left(\mathbf{-V} \cdot \mathbf{G_B}\right) \\
+\mathbf{I} &= \mathbf{V} \cdot \left(\mathbf{G_A} - \mathbf{G_B}\right)
+\end{aligned}
+$$
+
+\noindent
+With this, we can achieve a negative number computation if $\left(\mathbf{G_A} < \mathbf{G_B}\right)$.
+
+\subsection{Zero conductance representation}
+
+Earlier in \autoref{sec:considerations_cba_for_ann}, the conductance of a memristor cannot reach 0 $\mho$ (ie. the high resistance state is finite). Let's define the minimum conductance as $G_{Low}$. Using the dual \ac{CBA} approach, we can map a conductance of zero by setting ${G_A} = {G_B} = G_{Low}$. Since $\mathbf{I} = \mathbf{V} \cdot \left(\mathbf{G_A} - \mathbf{G_B}\right)$, we have achieved a multiplication with a true zero. In fact, if we want to achieve a weight in the range $-G_{Low} < 0 < G_{Low}$, we can achieve it too by tuning $G_A$ and $G_B$.
+
+\subsection{Voltage biasing}
+
+Producing negative voltage is needed to perform the computation in \autoref{methodology:fig:method_gnd_cba}. However, negative supply rails are inconvenient. Instead, one can bias all the voltages up by half of the positive supply range, $V_{bias} = 0.5 V_{max}$.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{method_bias_cba}}
+  \caption{Avoid negative voltages by biasing the entire \acp{CBA} to half of the positive supply range}
+  \label{methodology:fig:method_bias_cba}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hardware Architecture}
+
+\subsection{Overview of Hardware Accelerator}
+
+To perform an \ac{ANN} feedforward inference, the following architecture is proposed. It shall function as a co-processor to a digital system, with the entire \ac{ANN} inference being accelerated in the analog domain.
+
+The accelerator is memristor-based and consists of the \ac{CBA} (set up in dual \ac{CBA} approach) surrounded with additional circuitry as shown in \autoref{methodology:fig:hardware_feedforward_architecture}. These additional circuitry will be referred to as the wrapper circuit.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{hardware_feedforward_architecture}}
+  \caption{Proposed hardware architecture for the \ac{ANN} accelerator}
+  \label{methodology:fig:hardware_feedforward_architecture}
+\end{figure}
+
+
+The important \ac{ANN} operations to be achieved by the hardware acceleration are the \ac{MAC} function and activation function. In addition, quantisation is needed for \acp{BNN} as well. To achieve all these functionalities, the wrapper circuit contains the following blocks:
+
+\begin{description}[]
+% \item[1. Dual \ac{CBA} unit]
+% Stores the weights and perform the computation with the input from the previous layer and output towards the next layer. The stored weights are quantised to binary (+1 and -1).
+
+\item[(a) Current-to-Voltage Conversion]
+Since the \acp{CBA} outputs a result in the form of current, converting it back to voltage is needed to pass it on to the next stage of \acp{CBA}. Note that the circuit must support bidirectional current since the computation result may be positive and negative.
+
+\item[(b) Activation Function]
+Neuron activations, such as sigmoid and relu, are performed in the analog domain too. As a side effect of the current-to-voltage conversion circuit, the activation function is grouped together with it. 
+
+\item[(c) Analog Voltage Buffer]
+To prevent loading effect where the next stage \ac{CBA} loads the previous stage \ac{CBA}, the voltage is buffered from a high-impedance input to a low-impedance output.
+\end{description}
+
+
+\subsection{Current-to-Voltage Conversion}
+
+To perform current-to-voltage conversion without loading the previous stage of the circuit, a current mirror is used to. However, since the resultant current may be either positive or negative, a bidirectional current mirror is needed. 
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\linewidth]{\Pic{png}{block_currentmirror_demo}}
+  \caption{CMOS Current-to-Voltage Conversion Circuit}
+  \label{methodology:fig:block_currentmirror_demo}
+\end{figure}
+
+This thesis proposes the circuit in \autoref{methodology:fig:block_currentmirror_demo} for low powered current-to-voltage conversion. This configuration is a bidirectional current mirror adapted from \citet{Molinar_2016} \cite{Molinar_2016} but with a few important modifications as follows:
+
+\begin{description} % [noitemsep,nolistsep]
+  \item[(a) Current mirroring ratio of 10:1] \text{}\\
+  The current is converted to a voltage by using a shunt resistor in \verb|nmos2| and \verb|pmos2|. Since the mirrored current is used, it does not cause loading effect on the previous stage. 
+  Consider if we mirror $\sfrac{1}{10}\text{-th}$ of the current instead, and use a larger value shunt resistor, we will reduce the power loss through \verb|nmos2| and \verb|pmos2|.
+  To achieve this, the area/dimensions of the second set of CMOS device is controlled to be $\sfrac{1}{10}\text{-th}$ of the first set
+
+  \item[(b) Control MOSFET threshold to match supply rails] \text{}\\
+  The current mirroring effect is provided by \verb|nmos1| and \verb|pmos1|. Recall that for MOSFETs in saturation region, the current $i_D$ and voltage $v_{GS}$ are related with the following formula:
+  $$
+  i_D=\frac{\mu_n}{2}\frac{W}{L}C_{ox}\left(v_{GS}-V_{TH}\right)^{2}
+  $$
+  As we change the current $i_D$ that flows, the variation of $\left(v_{GS}-V_{TH}\right)$ is relatively small if the conductance parameter $K_p=\frac{\mu_n}{2}\frac{W}{L}C_{ox}$ is designed to be sufficiently large. In other words, $v_{GS} \cong V_{TH}$ for a large $K_p$.
+  \\
+  Given that $v_{GS} \cong V_{TH}$, we control the supply voltage such that $V_+ = V_{TH}$ and $V_- = -V_{TH}$. This will mean that the reference node (labelled \verb|ref| in \autoref{methodology:fig:block_currentmirror_demo}), will be remain at \verb|0V| so $V_{ref} \cong 0V$.
+  \\
+  If we replace the shunt resistor in \autoref{methodology:fig:method_gnd_cba} with this reference node, almost no loading occurs as the voltage is maintained at zero, ($V_{ref} \cong 0V$).
+\end{description}
+
+\noindent
+With the above considerations, the MOSFETs are manufactured such that:
+
+\begin{itemize}
+  \item $V_{THN}=V_{THP}=1V$
+  \item $ \left(\frac{W}{L}\right)_{NMOS1} = 10 \times \left(\frac{W}{L}\right)_{NMOS2}$
+  \item $ \left(\frac{W}{L}\right)_{PMOS1} = 10 \times \left(\frac{W}{L}\right)_{PMOS2}$
+  \item Note that $\sfrac{\mu_n}{\mu_p} \approx 2.5$. Hence, $\left(\frac{W}{L}\right)_{PMOS} > \left(\frac{W}{L}\right)_{NMOS}$
+\end{itemize}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{block_activation_tanh}}
+  \caption{Current-to-Voltage Conversion being clipped at the positive and negative rails}
+  \label{methodology:fig:block_activation_tanh}
+\end{figure}
+
+The operation is demonstrated in \autoref{methodology:fig:block_activation_tanh}. There is a linear conversion of 1mA input to a -1V output. Note the negative sign due to the reversed direction of the mirrored current. The drawback of this circuit is that it clips at the positive and negative voltage rails. However, since the application is for \acp{ANN}, we can use it as a feature for the non-linear activation function. In the case of \autoref{methodology:fig:block_activation_tanh}, it resembles a hard-tanh (or modified tanh) function.
+
+\subsection{Inclusion of Activation Function}
+
+From the DC sweep in \autoref{methodology:fig:block_activation_tanh}, the positive portion is controlled by \verb|pmos2| and the negative portion by \verb|nmos2|. Consider if we mirror the current differently, we will be able to modify the behaviour to mimic some activation functions.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{block_activation_leakyrelu}}
+  \caption{Performing a leaky-relu activation function by modifying the negative portion}
+  \label{methodology:fig:block_activation_leakyrelu}
+\end{figure}
+
+In \autoref{methodology:fig:block_activation_leakyrelu}, the conductance parameter of \verb|nmos2| is made to be $0.1 \times$ of \verb|pmos2|. The behaviour resembles that of a leaky-relu (note the clipping at the supply rails)
+
+$$
+  \text{Leaky-relu(x)} =
+      \left\lbrace
+      \array{@{}l@{\quad}l@{}l@{}} % \begin{cases}
+      % modified cases environment
+      % https://tex.stackexchange.com/a/549311
+        -1,   & \text{if } x\leq -1 & \text{ [negative rail clipping]}\\
+        0.1x, & \text{if } -1 \leq x \leq 0 & \text{ [behaviour due to nmos2]}\\
+        x,    & \text{if } 0 \leq x \leq 1 & \text{ [behaviour due to pmos2]}\\
+        +1,   & 1 \leq +1  & \text{ [positive rail clipping]}
+      \endarray \right. %\end{cases}
+$$
+
+\subsection{Analog Voltage Buffer}
+
+The voltage buffer repeats the input voltage to a low-impedance output. Using MOSFETs, there is no loading effect from the previous stage since the input is fed into the gate of the MOSFET. This configuration is known as the source follower circuit. However, the source follower introduces a voltage drop from the input to the output known as $V_{GS} = V_{TH}$, where $V_{TH}$ is the threshold voltage of the MOSFET.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\linewidth]{\Pic{png}{block_cmos_buffer}}
+  \caption{CMOS Voltage Follower Circuit}
+  \label{methodology:fig:block_cmos_buffer}
+\end{figure}
+
+\noindent
+To get rid of this voltage drop, we can cascade complementary stages of the source follower. For example, a PMOS stage with an NMOS stage.
+
+$$
+\begin{aligned}
+\text{For the PMOS: } & V_S = V_G + V_{THP} \\
+\text{For the NMOS: } & V_S = V_G - V_{THN} \\
+\Rightarrow\text{ } V_{INPUT} + V_{THP}& - V_{THN} = V_{OUTPUT}
+\end{aligned}
+$$
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\linewidth]{\Pic{png}{block_cmos_buffer_graph}}
+  \caption{DC Sweep Simulation showing the input and output behaviour for the CMOS Voltage Follower Circuit}
+  \label{methodology:fig:block_cmos_buffer_graph}
+\end{figure}
+
+\noindent
+If $V_{THP} = V_{THN}$, then $V_{INPUT} = V_{OUTPUT}$, the output will exactly be buffered from the input.
+Importantly, they must be manufactured to match as closely as possible like a CMOS such that $V_{THP} = V_{THN}$.
+Note that the allowable range is $\left(-V_{supply}+V_{TH}\right) < V_{INPUT} < \left(V_{supply}-V_{TH}\right)$ as both MOSFETs need to be maintained in saturation region. Thus, the supply voltage must be slightly larger than the working voltage range to be buffered. This behaviour is seen as it approaches the positive or negative rails in \autoref{methodology:fig:block_cmos_buffer_graph}.
+
+\section{Possibility of minimising hardware area}
+% TODO: expand on the circuitry
+
+Some of the components like the current-to-voltage converter and the activation functions give an inverted output.
+Instead of using additional hardware circuit to invert it back to the intended polarity, one can train the \ac{ANN} model with a custom activation function set to the inverted function instead.
+Simply put, the weights for the subsequent stages will flip in polarity. Hence, we can remove these additional hardware circuit and save on area.

@@ -1,19 +1,67 @@
 \SetPicSubDir{my-framework}
 
-\chapter{Proposed Framework}
+\chapter{Framework}
 \label{ch:framework}
 
 \vspace{2em}
 
-% In this section, the proposed framework of the simulation backend is described.
+\section{Abstraction Layer \& Simulation Backend}
 
-\section{Simulation \acsp{API}}
+With the proposed circuits in \autoref{ch:methodology} \nameref{ch:methodology}, the functionality of the entire system will be validated by building up a simulation backend. The backend is abstracted in a Python package to closely resemble the functionality of the actual \ac{CBA}. As illustrated in \autoref{framework:fig:abstraction_layers}, the aim is to allow for the low-level abstraction layer to maintain interoperability when redeploying the code on future developments of the hardware without affecting the high-level software stack. The simulation \acp{API} are designed to be easily swapped with the actual hardware \acp{API} and run interoperably with the algorithms at higher levels.
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.7\linewidth]{\Pic{png}{simulation_backend_ca1}}
-  \caption{Simulation backend hierarchy}
-  \label{framework:fig:simulation_backend_ca1}
+  \includegraphics[width=0.95\linewidth]{\Pic{png}{abstraction_layers_ca2}}
+  \caption{Abstraction layer for the actual hardware (left) and the simulation backend (right)}
+  \label{framework:fig:abstraction_layers}
 \end{figure}
 
-The simulation backend is currently built up in LTSpice with the hierarchy in \autoref{framework:fig:simulation_backend_ca1}. The \ac{CBA} can be auto-generated using the Python generation stack by passing in parameters like the number wordlines/bitlines and resistance states. After the necessary files are generated, the simulation stack exposes \acp{API}. The simulation \acp{API} is designed to be easily swapped with the actual hardware \acp{API} and runs interoperably with the algorithms at higher levels.
+\section{Generator-Simulator Stack}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.8\linewidth]{\Pic{png}{driver_stack_ca2}}
+  \caption{Python functions in the generator\textendash{}stack}
+  \label{framework:fig:driver_stack}
+\end{figure}
+
+At the driver level, the netlists for the \ac{CBA} can be auto-generated using the Python generation stack by passing in parameters shown in \autoref{framework:fig:driver_stack}. Configurable parameters include the size of the crossbar (the number of wordlines and bitlines) and a list of resistance states (supporting both binary and intermediate resistance states).
+The SPICE interface driver is designed to be cross-compatible with LTspice and Hspice. More details of the cross-compatible setup are explained in \fullref{appendix:spice}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.80\linewidth]{\Pic{png}{subcircuit_cell}}
+  \caption{Generated cell subcircuit}
+  \label{framework:fig:subcircuit_cell}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.80\linewidth]{\Pic{png}{subcircuit_cba}}
+  \caption{Generated \ac{CBA} subcircuit}
+  \label{framework:fig:subcircuit_cba}
+\end{figure}
+
+\autoref{framework:fig:subcircuit_cell} and \autoref{framework:fig:subcircuit_cba} are examples of the generated subcircuits. The subcircuit for the memristor is currently modelled in a 1R (one-resistor) configuration and can be expanded easily to other common configurations such as 1D1R (one-diode \& one-resistor) or 1T1R (one-transistor \&  one-resistor) by editing the subcircuit. Multiple cells are combined to form the \acl{CBA} subcircuit.
+
+\section{\Ac{CAL}}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{cal_layer_encap_ca2}}
+  \caption{Multiple \acp{CBA} combined into a single runtime}
+  \label{framework:fig:cal_layer_encap_ca2}
+\end{figure}
+
+To support the dual \ac{CBA} configuration in \autoref{sec:methodology:negative_number_representation} \nameref{sec:methodology:negative_number_representation}, the \acf{CAL} exposes a high level runtime layer which can incorporate multiple physical \acp{CBA} within it (see \autoref{framework:fig:cal_layer_encap_ca2}).
+Hence, many of these small \acp{CBA} may be combined and abstracted into a runtime. This is especially so since multiple small \acp{CBA} are easier to manufacture with a higher yield, and it is very likely that combining \acp{CBA} will be physically needed.
+
+The user may use the runtime as if it were a single large \ac{CBA}. The Python \ac{API} functions are outlined in \autoref{framework:fig:cal_layer_python}.
+%This functionality is demonstrated in \fullref{ch:results}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{cal_layer_python_ca2}}
+  \caption{Python functions in the Crossbar Abstraction Layer}
+  \label{framework:fig:cal_layer_python}
+\end{figure}

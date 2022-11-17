@@ -8,13 +8,13 @@
 
 \section{Properties of the memristor \ac{CBA}}
 
-To perform a multiplication in the analog domain, Ohm's Law is taken advantage of. By applying a voltage across a resistive element $R$, the current $I$ is a multiplication of the voltage $V$ and the conductance $G$, where $G = R^{-1}$.
+To perform a multiplication in the analog domain, Ohm's Law is taken advantage of. By applying a voltage across a resistive element $R$, the current $I$ is a multiplication of the voltage $V$ and the conductance $G$, where $G = \sfrac{1}{R}$.
 
   $$
     VG = I
   $$
 
-In order to utilise this up to do computing tasks, a precise way of being able to program the resistance on the fly is desired. A promising device is the memristor which has the ability to retain its resistance state \cite{Strukov_Snider_Stewart_Williams_2008}. Its resistance state can be changed by applying a set or reset threshold voltage pulse. Furthermore, it is a passive two-terminal device which uses very little power in comparison to transistors or other active devices \cite{Strukov_Snider_Stewart_Williams_2008}.
+In order to utilise this to do computing tasks, a precise way to program the resistance on-the-fly is desired. A promising device is the memristor which has the ability to retain its resistance state \cite{Strukov_Snider_Stewart_Williams_2008}. Its resistance state can be changed by applying a set or reset threshold voltage pulse. This is explained later on with its IV characteristic curve in \autoref{background:fig:memristor_iv_curve}. Furthermore, it is a passive two-terminal device which uses very low amounts of power in comparison to transistors or other active devices \cite{Strukov_Snider_Stewart_Williams_2008}.
 
 \section{Matrix operations on the \ac{CBA}}
 \label{sec:matrix_operations_on_the_cba}
@@ -43,41 +43,27 @@ However, if the bitline is driven with a voltage instead, another set of results
   V_{1\times5} \times \left(G^{T}\right)_{5\times3} = I_{1\times3}
   $$
 
-For \ac{ANN} application, the forward \ac{MAC} is used extensively in inference and in-memory computation is performed on the \ac{CBA} using the weight matrix stored in the memory. It is also possible to accelerate \ac{ANN} training algorithms such as backpropagation and gradient descent which require transpose \ac{MAC} operations \cite{Crafton_West_Basnet_Vogel_Raychowdhury_2019}.
+For \ac{ANN} applications, the forward \ac{MAC} is used extensively in inference with in-memory computation is performed on the \ac{CBA} using the weight matrix stored in the memory. With the transpose \ac{MAC} operation, it is also possible to accelerate \ac{ANN} training algorithms such as backpropagation and gradient descent \cite{Crafton_West_Basnet_Vogel_Raychowdhury_2019}.
 
-\section{Negative number representation}
+\section{Considerations when using \acp{CBA} for \ac{ANN} operations}
+\label{sec:considerations_cba_for_ann}
 
-Since the memristor conductance can only be positive, the matrix that is stored in the physical \ac{CBA} memory must only be positive. A method to map a negative number is to split up the number across two memristors such that $G = G_{A} - G_{B}$, where the device conductances $G_{A}$ and $G_{B}$ are positive values \cite{Sun_Ielmini_2022}. Two types of splitting methods can be used and \autoref{background:fig:col_row_splitting} depicts that under a wordline voltage drive.
-\\
+This section outlines the key considerations when using memristor-based hardware for neural network operations.
 
-  \begin{figure}[ht]
-    \centering
-    \includegraphics[width=1.0\linewidth]{\Pic{png}{col_row_splitting}}
-    \caption{Adjacent splitting methods in a \ac{CBA}. (a) Column-wise splitting. (b) Row-wise splitting.}
-    \label{background:fig:col_row_splitting}
-  \end{figure}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{memristor_iv_curve}}
+  \caption{IV characteristic curve of a memristive device \cite{CAMPBELL201710}. Measurements of the high and low resistive states are added to the figure.}
+  \label{background:fig:memristor_iv_curve}
+\end{figure}
 
-\autoref{background:fig:col_row_splitting}(a) performs column-wise splitting where single row of wordline voltage drive $V_1$ results in two columns of currents where the result can be retrieved with a subtraction circuit $I_1 = I_{1A} - I_{1B}$. \autoref{background:fig:col_row_splitting}(b) performs a row-wise splitting where two rows of wordline voltage drives, $V_1$ and $V_2 = - V_1$, creates a single column of current $I_1$ by law of \ac{KCL}.
+Firstly in an \ac{ANN} model, weights are typically normalised and stored as floating points between -1 to +1. The first issue is that memristors can only have positive conductances, hence we must come up with a method for computations involving negative weights. 
 
-% Overall, the pros and cons are detailed in this table:
+If we consider only the positive range of 0 to +1, an ideal memristor should have a programmable conductance ranging from 0 $\mho$ and 1 $\mho$ (or a resistive state ranging from $\infty$ $\Omega$ to $1$ $\Omega$). A practical memristor has a finite high resistive state and a large low resistive state. As seen in \autoref{background:fig:memristor_iv_curve}, \citet{CAMPBELL201710} \cite{CAMPBELL201710} achieves a ratio $\sfrac{R_{HRS}}{R_{LRS}}$ of only $\sfrac{1200 \Omega}{200 \Omega} = 6$.
 
-%   \begin{table}[h]
-%     \centering
-%     \begin{tabular}{|c||c|c|}
-%       \hline
-%       \text{} & Pros & Cons \\ 
-%       \hline \hline
-%       MainDoor & PasswordCheck & MainDoor \\ 
-%       \hline
-%       PasswordCheck & MainHall & MainDoor \\ 
-%       \hline
-%     \end{tabular} 
-%     \caption{Summary of \ac{CBA} splitting techniques}
-%   \end{table}
+Multiple \acp{CBA} will also have to be cascaded together. This maps to the multiple layers in \acp{ANN}. Since the result from the first \ac{CBA} is current, a current-to-voltage converter is needed to create the voltage to pass into the second \ac{CBA}. Additionally, interfacing circuits for activation functions need to be designed as well.
 
+Another major difficulty is the ability to achieve intermediate states between the high and low resistance states. The intermediate states are unstable; there may be drifts in the conductances as results are being read continuously \cite{Ielmini_2016}.
+Therefore, this project shall work with the constraint that each memristor can only achieve two states reliably. In other words, each device can only be used for only 1-bit binary representation. In particular, a \ac{BNN} will be used as a proof-of-concept for mapping of the hardware architecture.
 
-
-% TODO Matrix Inverse
-%https://www.pnas.org/doi/10.1073/pnas.1815682116
-% https://ieeexplore-ieee-org.libproxy1.nus.edu.sg/document/9774858
-
+With the above issues in mind, the possible solutions will be addressed in \fullref{ch:methodology}.

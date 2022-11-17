@@ -1,0 +1,197 @@
+\SetPicSubDir{appendix}
+
+\chapter{\Ac{CBA} Splitting Methods}
+\label{appendix:cbalayout}
+
+\vspace{2em}
+\vspace{1em}
+
+Splitting method refers to how desired numerical weights are physically represented across multiple memristive devices by splitting them up into its components. For simplicity of explanation, this appendix assumes the voltage biasing is about \verb|GND| or zero volts and negative voltage sources are available.
+
+%%
+\section{Single \ac{CBA} Splitting}
+
+If there is a constraint of using only a single \ac{CBA}, two types of splitting methods can be used. \autoref{appendix:fig:col_row_splitting} depicts that under a wordline voltage drive.
+
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{col_row_splitting}}
+    \caption{Adjacent splitting methods in a \ac{CBA}. (a) Column-wise splitting. (b) Row-wise splitting.}
+    \label{appendix:fig:col_row_splitting}
+  \end{figure}
+
+\autoref{appendix:fig:col_row_splitting}(a) performs column-wise splitting where single row of wordline voltage drive $V_1$ results in two columns of currents where the result can be retrieved with a subtraction circuit $I_1 = I_{1A} - I_{1B}$. \autoref{appendix:fig:col_row_splitting}(b) performs a row-wise splitting where two rows of wordline voltage drives, $V_1$ and $V_2 = - V_1$, creates a single column of current $I_1$ by law of \ac{KCL}.
+
+\section{Splitting method and its implications on the transpose \ac{MAC} operation}
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_three_split}}
+    \caption{Three device splitting method within one \ac{CBA} to accommodate the transpose operation.}
+    \label{appendix:fig:transpose_three_split}
+  \end{figure}
+
+Splitting technique must also account for the directional voltage drive, namely wordline drive and bitline drive, used to perform the transpose operation as mentioned in {\fullref{sec:forward_and_transpose_mac_operations}}. The following methods are proposed to accommodate the transpose operation.
+\autoref{appendix:fig:transpose_three_split} assumes the constraint of using only one \ac{CBA} and adjacent devices. With the column-wise $G_{11A}, G_{11B}$ used for the wordline drive and the row-wise $G_{11A}, G_{11B}$ used during bitline drive, this results in three memristors can be mapped to a single number. Having adjacent devices makes it logistically convenient at the expense of taking up $1.5\times$ the memory area due to a duplicated $G_{11B}$ as highlighted in yellow.
+
+\section{Dual \ac{CBA} Splitting}
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{transpose_two_cba}}
+    \caption{Splitting across two \ac{CBA} to accommodate the transpose operation.}
+    \label{appendix:fig:transpose_two_cba}
+  \end{figure}
+
+\autoref{appendix:fig:transpose_two_cba} is a situation where multiple \acsp{CBA} are used in parallel without constraints. 
+Two \acsp{CBA} can be stacked, with the first array holding the positive weights $G_{11A}$ and the second array holding the absolute of the negative weights $G_{11B}$. However, this needs a duplicated voltage drive $V_1$. 
+% Furthermore, in terms of manufacturability, it may not be possible to achieve two \acsp{CBA} prototypes within the timeframe of this project thesis. 
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{dual_cba_gnd}}
+    \caption{Reading the bitline current from a dual \ac{CBA} approach}
+    \label{appendix:fig:dual_cba_gnd}
+  \end{figure}
+
+When the current is to be read, the output bitlines are tied together to perform a summation of the individual currents, $I_{result} = I_{A} - I_{B}$ (see \autoref{appendix:fig:transpose_segment}).
+
+\section{\ac{CBA} Segmentation}
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{transpose_segment}}
+    \caption{Segmenting one \ac{CBA} and multiplexing each segment to accommodate the transpose operation.}
+    \label{appendix:fig:transpose_segment}
+  \end{figure}
+
+We can also virtually segment the \ac{CBA} into equal regions and view it as multiple smaller arrays. The interfacing can be abstracted at the firmware level before the driver.
+\autoref{appendix:fig:transpose_segment} segments the \ac{CBA} into four. The two segments, whose wordlines and bitlines do not overlap, can be used simultaneously. 
+This makes the software interface more complicated since only 2 out of 4 segments can be used at a single time interval, which effectively cuts the computational throughput in half. 
+
+\section{Dual \ac{CBA} with floating reference}
+
+In \autoref{appendix:fig:dual_cba_gnd}, the bitlines of the two \acp{CBA} are tied together with a common reference \verb|GND|. The implication is that the output result is a current. A difficulty is to create the current sense circuit and convert it to a voltage for use with the next stage \ac{CBA}.
+
+  \begin{figure}[!htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{dual_cba_float}}
+    \caption{Leaving the midpoint connection untied to any reference voltage, essentially allowing the voltage to float.}
+    \label{appendix:fig:dual_cba_float}
+  \end{figure}
+
+A possible alternative to allow the reference to float at an intermediate voltage like in \autoref{appendix:fig:dual_cba_float}. This means that the output result is a voltage which can be used directly without conversion.
+However, the floating voltage approach has a problem with voltage attenuation. Let's consider the following diagram (\autoref{appendix:fig:dual_cba_circuit}) to calculate a generalised expression for the expected voltage output at the floating node, $V_f$.
+
+  \begin{figure}[!htbp]
+    \centering
+    \begin{circuitikz}
+    \draw[line width=0.8]
+        (2+1.5,8) node[label={[font=\Large]\textbf{CBA1}}] {}
+        (2-0.5,8) node[] {$V_{1}$}
+        (2,8) to ++(1,0) to [memristor, l_=$G_{1A}$] ++(2, -2) to ++(0, -2)
+
+        (2-0.5,6) node[] {$V_{2}$}
+        (2,6) to ++(1,0) to [memristor, l_=$G_{2A}$,-*] ++(2, -2) to ++(0, -1)
+
+        (7+1.5,8) node[label={[font=\Large]\textbf{CBA2}}] {}
+        (7-0.5,8) node[] {$-V_{1}$}
+        (7,8) to ++(1,0) to [memristor, l_=$G_{1B}$] ++(2, -2) to ++(0, -2)
+
+        (7-0.5,6) node[] {$-V_{2}$}
+        (7,6) to ++(1,0) to [memristor, l_=$G_{2B}$,-*] ++(2, -2) to ++(0, -1)
+
+        (7+3,3) to (2+3,3)
+        (7,3) node[label={[font=\normalsize]below:$V_{f}$},circ] {}
+        ;
+    %\draw[help lines] (0,0) grid (10,10);
+	\end{circuitikz}
+    \caption{Consider the expected voltage output at the floating node for each wordline output}
+    \label{appendix:fig:dual_cba_circuit}
+  \end{figure}
+
+\noindent
+Using \ac{KCL} at the floating node, we get this equation 
+
+$$
+    \frac{V_1 - V_f}{R_{1A}} + \frac{V_2 - V_f}{R_{2A}}
+    = \frac{V_f + V_1}{R_{1B}} + \frac{V_f + V_2}{R_{2B}}
+$$
+
+$$
+    \left(V_1 - V_f\right) G_{1A} + \left(V_2 - V_f\right) G_{2A}
+    = \left(V_f + V_1\right) G_{1B} + \left(V_f + V_2\right) G_{2B}
+$$
+
+\vspace{1em}
+
+\noindent
+Hence, the expected voltage output at the floating node is given as:
+
+$$
+    \Rightarrow V_f = \frac
+    { V_1\left( G_{1A} - G_{1B}\right) + V_2\left( G_{2A} - G_{2B}\right) }
+    {G_{1A}+G_{1B}+G_{2A}+G_{2B}}
+$$
+
+\vspace{1em}
+
+\noindent
+We can generalise this to the following formula:
+
+$$
+    V_f = \frac
+    { \text{Input vector} \times \text{Conductance column matrix} }
+    { \text{Sum over all conductances} }
+$$
+
+\vspace{1em}
+
+\noindent
+Let's define $A = \sfrac{R_{HRS}}{R_{LRS}} = \sfrac{G_{Low}}{G_{High}}$. We can then normalise it to the ratios between the conductance states.
+
+$$
+    V_f = \frac
+    { \text{Input vector} \times \text{Normalised column matrix} }
+    { \text{Normalised sum over all conductances} }
+$$
+
+\noindent
+Note that the denominator is the normalised sum over all conductances. This means that if the overall conductances ratio $A$ is higher, it will result in smaller voltage output.
+
+\vspace{1em}
+
+\noindent
+Consider the following table of results and note the voltage attenuation. Assume $A = 5$ by choosing $\sfrac{R_{HRS}}{R_{LRS}} = \sfrac{1000 \Omega}{200 \Omega}$.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Conductance state}} & \multicolumn{5}{|c|}{\textbf{Voltage input state $[V_1, V_2]$}} \\
+        \hline
+        $G_1$ & $G_2$ & [0,0] & [0,1] & [0,-1] & [1,1] & [-1,-1] \\ 
+        \hline
+        \hline
+        Low & Low   & 0.0 & 0.0   & 0.0    & 0.0 & 0.0 \\
+        \hline
+        Low & High  & 0.0 & 0.5   & -0.5   & 0.5 & -0.5 \\
+        \hline
+        High & Low  & 0.0 & 0.0   & 0.0    & 0.5 & -0.5 \\
+        \hline
+        High & High & 0.0 & \hl{0.334} & \hl{-0.334} & \hl{0.667} & \hl{-0.667} \\
+        \hline
+    \end{tabular} 
+    
+    \caption{Simulation results to find the voltage output at the floating node}
+    \label{appendix:table:floating_results}
+\end{table}
+
+\noindent
+Overall, since attenuation depends on permutation of states, this is a non-linear behaviour which is not suitable for the work in this project. 
+However, this approach suitable if a complete binary quantisation is possible at the output neurons of the \ac{ANN} model, since the polarity or sign of the results are still maintained.
+
+\noindent
+There can be a way to linearise the output. A naive method is to pass in all-ones as the input to get the maximum range. For example, highlighted in yellow in \autoref{appendix:table:floating_results}, an all-ones output is $0.667V$ and can be used to adjust the midpoint result $0.334$ to $\sfrac{0.334}{0.667} = 0.5$.
+
+\noindent
+More iterations of how to solve this configuration will be an area of future research.
