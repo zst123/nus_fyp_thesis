@@ -186,6 +186,23 @@ $$
       \endarray \right. %\end{cases}
 $$
 
+\subsection{Body Effect as Control Signal}
+
+We also want to make the activation function customisable according to the user needs. A possible method is to make use of the body effect.
+
+$$
+  V_T = V_{T0}+\gamma\left(\sqrt{|-2\phi_P+V_{SB}|} - \sqrt{|2\phi_p|}\right)
+$$
+
+If we introduce a negative voltage to the body $V_B$, we invoke the body effect where the MOSFET threshold voltage $V_T$ increases as $V_{SB}$ increases. With this, the MOSFET cannot meet new threshold and will be effectively "disabled". With these control signals, we can enabling and disabling MOSFETs, we can achieve customisable activation functions.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{block_activation_body_effect}}
+  \caption{Depiction of control signals using the body effect}
+  \label{methodology:fig:block_activation_body_effect}
+\end{figure}
+
 \subsection{Analog Voltage Buffer}
 
 The voltage buffer repeats the input voltage to a low-impedance output. Using MOSFETs, there is no loading effect from the previous stage since the input is fed into the gate of the MOSFET. This configuration is known as the source follower circuit. However, the source follower introduces a voltage drop from the input to the output known as $V_{GS} = V_{TH}$, where $V_{TH}$ is the threshold voltage of the MOSFET.
