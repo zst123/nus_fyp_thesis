@@ -83,17 +83,17 @@ Producing negative voltage is needed to perform the computation in \autoref{meth
 
 To perform an \ac{ANN} feedforward inference, the following architecture is proposed. It shall function as a co-processor to a digital system, with the entire \ac{ANN} inference being accelerated in the analog domain.
 
-The accelerator is memristor-based and consists of the \ac{CBA} (set up in dual \ac{CBA} approach) surrounded with additional circuitry as shown in \autoref{methodology:fig:hardware_feedforward_architecture}. These additional circuitry will be referred to as the wrapper circuit.
+The accelerator is memristor-based and consists of the \ac{CBA} (set up in dual \ac{CBA} approach) surrounded with additional circuitry as shown in \autoref{methodology:fig:hardware_feedforward_architecture}. These additional circuitry will be referred to as the neuron circuit.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=1.0\linewidth]{\Pic{png}{hardware_feedforward_architecture}}
+  \includegraphics[width=1.0\linewidth]{\Pic{png}{hardware_feedforward_architecture_new}}
   \caption{Proposed hardware architecture for the \ac{ANN} accelerator}
   \label{methodology:fig:hardware_feedforward_architecture}
 \end{figure}
 
 
-The important \ac{ANN} operations to be achieved by the hardware acceleration are the \ac{MAC} function and activation function. In addition, quantisation is needed for \acp{BNN} as well. To achieve all these functionalities, the wrapper circuit contains the following blocks:
+The important \ac{ANN} operations to be achieved by the hardware acceleration are the \ac{MAC} function and activation function. In addition, quantisation is needed for \acp{BNN} as well. To achieve all these functionalities, the neuron circuit contains the following blocks:
 
 \begin{description}[]
 % \item[1. Dual \ac{CBA} unit]
@@ -243,3 +243,22 @@ Note that the allowable range is $\left(-V_{supply}+V_{TH}\right) < V_{INPUT} < 
 Some of the components like the current-to-voltage converter and the activation functions give an inverted output.
 Instead of using additional hardware circuit to invert it back to the intended polarity, one can train the \ac{ANN} model with a custom activation function set to the inverted function instead.
 Simply put, the weights for the subsequent stages will flip in polarity. Hence, we can remove these additional hardware circuit and save on area.
+This is explored further in \autoref{appendix:ste}.
+
+\section{Summary of neuron circuitry}
+
+We thus summarise the neuron circuit behavioural block diagram in \autoref{methodology:fig:block_diagram_neuron} and form a detailed schematic in SPICE as in \autoref{methodology:fig:schematic_neuron}. Note that there are two outputs voltages to feed into the dual \ac{CBA} as explained in \autoref{sec:methodology:dual_cba_approach}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.65\linewidth]{\Pic{png}{block_diagram_neuron}}
+  \caption{Neuron circuit block diagram}
+  \label{methodology:fig:block_diagram_neuron}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.6\linewidth]{\Pic{png}{schematic_neuron}}
+  \caption{Neuron circuit schematic in LTSpice}
+  \label{methodology:fig:schematic_neuron}
+\end{figure}
