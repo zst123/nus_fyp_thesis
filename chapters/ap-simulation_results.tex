@@ -1,0 +1,91 @@
+\SetPicSubDir{appendix}
+
+\chapter{Simulation Results}
+\label{appendix:simulation_results}
+
+\vspace{2em}
+
+\section{\ac{CBA} Noise Sensitivity}
+\label{appendix:simulation_results:cba_ns}
+
+\noindent
+To analyse the effects as we scale up the \ac{CBA}, a Monte Carlo analysis is done.
+The memristor cells are set to have a Gaussian distribution with a standard deviation (this simulates the manufacturing tolerance).
+Using these cells, a \ac{CBA} of desired size is generated and random input voltages are fed into the wordline.
+The results are read at the bitline and we will compute the error in the crossbar result (the deviation of the actual value from the theoretical value). This process is repeated to form a distribution of results, where the mean and standard deviation are measured.
+
+\subsection{Summary of simulation parameters}
+
+\begin{itemize}
+    \item \underline{Tolerance of the memristor cells}\\
+        \textbf{Monte Carlo Standard Deviation} \\
+            $\sigma$ = \{1\%,  5\%, 10\%, 15\%, 20\%, 25\%, 30\%\}
+    \item \underline{Size of Crossbar Array} \\
+        \textbf{No. of wordlines} \\
+        k = \{1, 2, 4, 8, 12, 16, 24, 32, 48, 64, 80, 96, 128, 256, 384, 512, 640, 768\}
+    \item \underline{Measurements} \\
+        \textbf{Error in the crossbar result} \\
+        $\epsilon$ = Actual current output $-$ Theoretical current output \\
+        \textbf{Units:} {current in amps [A]}
+\end{itemize}
+
+\subsection{Results from the Monte Carlo runs}
+
+% Table (Part 1)
+\noindent\scalebox{0.5}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    \textbf{CBA Size} & \textbf{Mean (mc=30\%)} & \textbf{SD (mc=30\%)} & \textbf{Mean (mc=25\%)} & \textbf{SD (mc=25\%)} & \textbf{Mean (mc=20\%)} & \textbf{SD (mc=20\%)} & \textbf{Mean (mc=15\%)} & \textbf{SD (mc=15\%)} \\ \hline
+    1 & 1.002453E-05 & 5.178762E-07 & 1.001136E-05 & 3.582314E-07 & 1.000432E-05 & 2.287289E-07 & 1.000114E-05 & 1.284919E-07 \\ \hline
+    2 & 2.005492E-05 & 7.192407E-07 & 2.002702E-05 & 4.979470E-07 & 2.001151E-05 & 3.181530E-07 & 2.000395E-05 & 1.788201E-07 \\ \hline
+    4 & 4.013244E-05 & 1.026685E-06 & 4.006861E-05 & 7.100012E-07 & 4.003177E-05 & 4.532291E-07 & 4.001258E-05 & 2.545615E-07 \\ \hline
+    8 & 8.020905E-05 & 1.453181E-06 & 8.009861E-05 & 1.003849E-06 & 8.003891E-05 & 6.402412E-07 & 8.001134E-05 & 3.593543E-07 \\ \hline
+    12 & 1.203643E-04 & 1.931480E-06 & 1.201824E-04 & 1.335083E-06 & 1.200801E-04 & 8.518768E-07 & 1.200291E-04 & 4.782881E-07 \\ \hline
+    16 & 1.604916E-04 & 1.988511E-06 & 1.602486E-04 & 1.373903E-06 & 1.601109E-04 & 8.763653E-07 & 1.600414E-04 & 4.919270E-07 \\ \hline
+    24 & 2.405876E-04 & 2.536526E-06 & 2.402710E-04 & 1.752956E-06 & 2.401021E-04 & 1.118366E-06 & 2.400263E-04 & 6.278611E-07 \\ \hline
+    32 & 3.207840E-04 & 2.700019E-06 & 3.203606E-04 & 1.867981E-06 & 3.201351E-04 & 1.192832E-06 & 3.200343E-04 & 6.701453E-07 \\ \hline
+    48 & 4.809439E-04 & 2.943275E-06 & 4.803799E-04 & 2.035752E-06 & 4.800996E-04 & 1.299793E-06 & 4.799934E-04 & 7.301970E-07 \\ \hline
+    64 & 6.412870E-04 & 3.381009E-06 & 6.405242E-04 & 2.342218E-06 & 6.401430E-04 & 1.497411E-06 & 6.399964E-04 & 8.420699E-07 \\ \hline
+    80 & 8.016466E-04 & 3.925495E-06 & 8.006803E-04 & 2.717734E-06 & 8.001942E-04 & 1.736630E-06 & 8.000039E-04 & 9.762259E-07 \\ \hline
+    96 & 9.619645E-04 & 4.296578E-06 & 9.608114E-04 & 2.978711E-06 & 9.602314E-04 & 1.905426E-06 & 9.600045E-04 & 1.071971E-06 \\ \hline
+    128 & 1.282656E-03 & 4.926841E-06 & 1.281103E-03 & 3.408411E-06 & 1.280320E-03 & 2.176581E-06 & 1.280011E-03 & 1.222926E-06 \\ \hline
+    256 & 2.565336E-03 & 7.797409E-06 & 2.562226E-03 & 5.398462E-06 & 2.560654E-03 & 3.449183E-06 & 2.560032E-03 & 1.938572E-06 \\ \hline
+    384 & 3.848842E-03 & 1.037388E-05 & 3.843922E-03 & 7.185813E-06 & 3.841354E-03 & 4.593145E-06 & 3.840258E-03 & 2.582423E-06 \\ \hline
+    512 & 5.131667E-03 & 1.173688E-05 & 5.125145E-03 & 8.132949E-06 & 5.121753E-03 & 5.200046E-06 & 5.120314E-03 & 2.924274E-06 \\ \hline
+    640 & 6.415515E-03 & 1.293400E-05 & 6.407077E-03 & 8.958100E-06 & 6.402605E-03 & 5.725401E-06 & 6.400625E-03 & 3.218767E-06 \\ \hline
+    768 & 7.698789E-03 & 1.456034E-05 & 7.688610E-03 & 1.009799E-05 & 7.683199E-03 & 6.460972E-06 & 7.680791E-03 & 3.635378E-06 \\ \hline
+\end{tabular}
+}
+
+\phantom{-}
+
+% Table (Part 2)
+\noindent\scalebox{0.5}{
+\begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \textbf{CBA Size} & \textbf{Mean (mc=10\%)} & \textbf{SD (mc=10\%)} & \textbf{Mean (mc=5\%)} & \textbf{SD (mc=5\%)} & \textbf{Mean (mc=1\%)} & \textbf{SD (mc=1\%)} \\ \hline
+    1 & 1.000010E-05 & 5.707016E-08 & 9.999964E-06 & 1.426349E-08 & 9.999998E-06 & 5.705003E-10 \\ \hline
+    2 & 2.000096E-05 & 7.945265E-08 & 2.000012E-05 & 1.986194E-08 & 2.000000E-05 & 7.944216E-10 \\ \hline
+    4 & 4.000391E-05 & 1.130494E-07 & 4.000073E-05 & 2.825203E-08 & 4.000003E-05 & 1.129944E-09 \\ \hline
+    8 & 8.000170E-05 & 1.595100E-07 & 7.999993E-05 & 3.985177E-08 & 8.000000E-05 & 1.593751E-09 \\ \hline
+    12 & 1.200079E-04 & 2.123443E-07 & 1.200012E-04 & 5.305737E-08 & 1.200000E-04 & 2.121936E-09 \\ \hline
+    16 & 1.600117E-04 & 2.183675E-07 & 1.600019E-04 & 5.455750E-08 & 1.600001E-04 & 2.182559E-09 \\ \hline
+    24 & 2.400018E-04 & 2.787380E-07 & 2.399990E-04 & 6.964542E-08 & 2.399999E-04 & 2.785259E-09 \\ \hline
+    32 & 3.200020E-04 & 2.976630E-07 & 3.199985E-04 & 7.439626E-08 & 3.199999E-04 & 2.977015E-09 \\ \hline
+    48 & 4.799772E-04 & 3.243341E-07 & 4.799913E-04 & 8.106320E-08 & 4.799996E-04 & 3.242660E-09 \\ \hline
+    64 & 6.399718E-04 & 3.742973E-07 & 6.399890E-04 & 9.359250E-08 & 6.399995E-04 & 3.745461E-09 \\ \hline
+    80 & 7.999684E-04 & 4.338125E-07 & 7.999871E-04 & 1.084575E-07 & 7.999995E-04 & 4.336959E-09 \\ \hline
+    96 & 9.599621E-04 & 4.766244E-07 & 9.599846E-04 & 1.191966E-07 & 9.599993E-04 & 4.767624E-09 \\ \hline
+    128 & 1.279952E-03 & 5.432386E-07 & 1.279980E-03 & 1.357818E-07 & 1.279999E-03 & 5.426479E-09 \\ \hline
+    256 & 2.559907E-03 & 8.613095E-07 & 2.559961E-03 & 2.153002E-07 & 2.559998E-03 & 8.612226E-09 \\ \hline
+    384 & 3.839955E-03 & 1.147660E-06 & 3.839965E-03 & 2.869353E-07 & 3.839999E-03 & 1.147451E-08 \\ \hline
+    512 & 5.119926E-03 & 1.299784E-06 & 5.119950E-03 & 3.249858E-07 & 5.119998E-03 & 1.300866E-08 \\ \hline
+    640 & 6.400011E-03 & 1.430396E-06 & 6.399963E-03 & 3.576153E-07 & 6.399998E-03 & 1.430891E-08 \\ \hline
+    768 & 7.680032E-03 & 1.616466E-06 & 7.679960E-03 & 4.042843E-07 & 7.679998E-03 & 1.619021E-08 \\ \hline
+\end{tabular}%
+}
+\begin{table}[h!]
+\caption{Results from Monte Carlo runs of \ac{CBA} simulation}
+\end{table}
+
+
