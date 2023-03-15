@@ -240,25 +240,27 @@ Note that the allowable range is $\left(-V_{supply}+V_{TH}\right) < V_{INPUT} < 
 \section{Possibility of minimising hardware area}
 % TODO: expand on the circuitry
 
+\noindent
 Some of the components like the current-to-voltage converter and the activation functions give an inverted output.
 Instead of using additional hardware circuit to invert it back to the intended polarity, one can train the \ac{ANN} model with a custom activation function set to the inverted function instead.
 Simply put, the weights for the subsequent stages will flip in polarity. Hence, we can remove these additional hardware circuit and save on area.
-This is explored further in \autoref{appendix:ste}.
+This is explored further in \fullref{appendix:ste}.
 
 \section{Summary of neuron circuitry}
 
-We thus summarise the neuron circuit behavioural block diagram in \autoref{methodology:fig:block_diagram_neuron} and form a detailed schematic in SPICE as in \autoref{methodology:fig:schematic_neuron}. Note that there are two outputs voltages to feed into the dual \ac{CBA} as explained in \autoref{sec:methodology:dual_cba_approach}.
+\noindent
+We thus summarise the neuron circuit behavioural block diagram in \autoref{methodology:fig:block_diagram_neuron} and form a detailed schematic in SPICE as in \autoref{methodology:fig:schematic_neuron}. Note that there are two outputs voltages to feed into the dual \ac{CBA} as explained in \fullref{sec:methodology:dual_cba_approach}.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.65\linewidth]{\Pic{png}{block_diagram_neuron}}
+  \includegraphics[width=0.8\linewidth]{\Pic{png}{block_diagram_neuron}}
   \caption{Neuron circuit block diagram}
   \label{methodology:fig:block_diagram_neuron}
 \end{figure}
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=0.6\linewidth]{\Pic{png}{schematic_neuron}}
+  \includegraphics[width=0.8\linewidth]{\Pic{png}{schematic_neuron}}
   \caption{Neuron circuit schematic in LTSpice}
   \label{methodology:fig:schematic_neuron}
 \end{figure}
