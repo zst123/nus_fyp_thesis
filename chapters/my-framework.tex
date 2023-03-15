@@ -29,21 +29,26 @@ At the driver level, the netlists for the \ac{CBA} can be auto-generated using t
 The SPICE interface driver is designed to be cross-compatible with LTspice and Hspice. More details of the cross-compatible setup are explained in \fullref{appendix:spice}.
 
 \begin{figure}[!ht]
+\begin{minipage}[b]{0.49\textwidth}
   \centering
-  \includegraphics[width=0.80\linewidth]{\Pic{png}{subcircuit_cell}}
+  \includegraphics[width=\linewidth]{\Pic{png}{subcircuit_cell}}
   \caption{Generated cell subcircuit}
   \label{framework:fig:subcircuit_cell}
-\end{figure}
-
-\begin{figure}[!ht]
+\end{minipage}%
+\begin{minipage}[b]{0.49\textwidth}
   \centering
-  \includegraphics[width=0.80\linewidth]{\Pic{png}{subcircuit_cba}}
+  \includegraphics[width=\linewidth]{\Pic{png}{subcircuit_cba}}
   \caption{Generated \ac{CBA} subcircuit}
   \label{framework:fig:subcircuit_cba}
+\end{minipage}%
 \end{figure}
 
-\autoref{framework:fig:subcircuit_cell} and \autoref{framework:fig:subcircuit_cba} are examples of the generated subcircuits. The subcircuit for the memristor is currently modelled in a 1R (one-resistor) configuration and can be expanded easily to other common configurations such as 1D1R (one-diode \& one-resistor) or 1T1R (one-transistor \&  one-resistor) by editing the subcircuit. Multiple cells are combined to form the \acl{CBA} subcircuit.
+\newpage
 
+\autoref{framework:fig:subcircuit_cell} and \autoref{framework:fig:subcircuit_cba} are examples of the generated subcircuits. The subcircuit for the memristor is currently modelled in a 1R (one-resistor) configuration and can be expanded easily to other common configurations such as 1D1R (one-diode \& one-resistor) or 1T1R (one-transistor \&  one-resistor) by editing the subcircuit. Multiple cells are combined to form the \acl{CBA} subcircuit.
+For deployment, the following Python \ac{API} functions are implemented as in \autoref{framework:fig:cal_layer_python}
+
+\iffalse
 \section{\Ac{CAL}}
 
 \begin{figure}[!ht]
@@ -58,10 +63,38 @@ Hence, many of these small \acp{CBA} may be combined and abstracted into a runti
 
 The user may use the runtime as if it were a single large \ac{CBA}. The Python \ac{API} functions are outlined in \autoref{framework:fig:cal_layer_python}.
 %This functionality is demonstrated in \fullref{ch:results}.
+\fi
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1.0\linewidth]{\Pic{png}{cal_layer_python_ca2}}
   \caption{Python functions in the Crossbar Abstraction Layer}
   \label{framework:fig:cal_layer_python}
+\end{figure}
+
+%% Sem 2
+\section{Generation of neural network circuitry}
+
+\noindent
+With the subcircuits generated above, the script can also cascade several layers together. \autoref{framework:fig:generated_cba:4x2x3} shows a close up of the initial generated schematic. It consists of two sets (\acf{CBA} and neuron circuit) cascaded together. After the functionality has been verified, a larger network (consisting of 100-inputs, 50-hidden, and 10-output nodes) was generated for the demonstration of a MNIST model network (see \autoref{framework:fig:generated_cba:100x50x10}). The performance of the hardware neural network will be characterised in \fullref{ch:results}.
+
+\begin{figure}[!ht]
+  \centering
+
+  \begin{subfigure}{0.85\textwidth}
+    \includegraphics[width=\linewidth]{\Pic{png}{generated_4x2x3}}
+    \caption{Network of $4\times 2\times 3$ \textendash{} for testing purposes}
+    \label{framework:fig:generated_cba:4x2x3}
+  \end{subfigure}
+
+  \vspace{2em}
+
+  \begin{subfigure}{1.0\textwidth}
+    \includegraphics[width=\linewidth]{\Pic{png}{generated_100x50x10}}
+    \caption{Network of $100\times 50\times 10$ \textendash{} for MNIST model demo}
+    \label{framework:fig:generated_cba:100x50x10}
+  \end{subfigure}
+
+  \caption{Generated neural network circuit diagrams by the generator\textendash{}stack}
+  \label{framework:fig:generated_cba}
 \end{figure}
