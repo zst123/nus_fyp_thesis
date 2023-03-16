@@ -1,0 +1,75 @@
+\SetPicSubDir{appendix}
+
+\chapter{Analysis of tolerance for resistance and conductance}
+\label{appendix:rv_distribution}
+
+\vspace{2em}
+
+% R and G are random variables
+
+\subsection{Transformations of random variable distributions}
+
+\noindent {
+\begin{table}[!h]
+    \everymath{\displaystyle}
+    \renewcommand{\arraystretch}{2.0}
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Random variable & Mean & Standard deviation \\ \hline
+        $X$ & $\mu_X$ & $\sigma_X$ \\ \hline
+        $a + bX$ & $\mu_{a+bX} = a + b\mu_{X}$ & $\sigma_{a+bX} = \lvert b \rvert \sigma_X $ \\ \hline
+        $X \pm Y$ & $\mu_{X \pm Y} = \mu_{X} \pm \mu_{Y} $ & $\sigma_{X \pm Y}^2 = \sigma_{X}^2 + \sigma_{Y}^2 $ \\ \hline
+        $\frac{1}{X}$ & $\mu_{1/X} = \frac{1}{\mu_{X}} $ & $\sigma_{1/X} = \frac{\sigma_{X}}{\mu_X^2} $ \\ \hline
+        $ X \cdot Y $ & $ \mu_{XY} = \mu_{X} \cdot \mu_{Y} $ & $\sigma_{XY}^2 = \sigma_X \sigma_Y + \sigma_X \mu_Y^2 + \sigma_Y \mu_X^2 $ \\ \hline
+    \end{tabular}
+\end{table}
+}
+
+\noindent
+Note: X and Y are assumed to be independent random variables and $\mu_X$ is non-zero.
+
+\subsection{Proof of equivalence in distributions for resistance \& conductance}
+
+\noindent
+\Acfp{CBA} have a manufacturing tolerance which must be accounted for in its memristive states. In order to reduce confusion in analysis, we must understand the relations between stating the tolerance for resistance or for conductance.
+
+\text{}
+
+\noindent
+The following proof shows that random variable distributions for resistance and conductance are congruent. This means that if we apply a tolerance to a resistance, the same tolerance is implied for the conductance as well during analysis.
+
+\setlength{\fboxsep}{1em}
+\noindent
+\framebox[\textwidth][l]{\parbox{0.95\textwidth}{
+    For resistor R = 10 $k\Omega$ with 5\% tolerance, we can see it as a probability distribution with $\mu_R = 10000$ and $\sigma_R = 500$.
+
+    \text{}
+
+    In other words, we have $\mu_R$ and $\sigma_R = T_R\cdot \mu_R$ if we let tolerance be $T_R$ (where $T_R$ = 0.05 for 5\%), 
+
+    \text{}
+
+    Likewise, for conductance G, we have $\mu_G = 1/\mu_R$ and $\sigma_G = T_G \cdot \mu_R$ with tolerance of $T_G$
+
+    \text{}
+
+    \textbf{\underline{Proof that tolerance for R is the same as tolerance for G:}}
+
+    \begin{align*} 
+        \text{From transformation table: } \sigma_{G} &= \frac{\sigma_{R}}{\mu_R^2} \\
+        \text{Since } \sigma_R = T_R\cdot \mu_R \text { and } \sigma_G &= T_G\cdot \mu_G, \\
+        T_G\cdot \mu_G &= \frac{T_R \cdot \mu_R}{\mu_R^2} \\
+        T_G\cdot \mu_G &= \frac{T_R}{\mu_R}\\
+        \text{Since } \mu_G &= \frac{1}{\mu_R}, \\
+        \frac{T_G}{\mu_R} &= \frac{T_R}{\mu_R}\\
+        \\
+        \text{Since }\mu_R &= R > 0, \\
+        \Rightarrow T_G &= T_R \text{ [Proven!] }
+    \end{align*}
+}}
+
+\text{}
+
+\noindent
+From the above proof, the random variable distribution for resistance and conductance are equivalent, and thus they can be analysed in an interchangeable manner.
