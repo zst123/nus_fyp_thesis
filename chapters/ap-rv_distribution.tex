@@ -1,6 +1,6 @@
 \SetPicSubDir{appendix}
 
-\chapter{Analysis of tolerance for resistance and conductance}
+\chapter{Analysis of distribution for resistance and conductance}
 \label{appendix:rv_distribution}
 
 \vspace{2em}
@@ -37,35 +37,35 @@ Note: X and Y are assumed to be independent random variables and $\mu_X$ is non-
 \text{}
 
 \noindent
-The following proof shows that random variable distributions for resistance and conductance are congruent. This means that if we apply a tolerance to a resistance, the same tolerance is implied for the conductance as well during analysis.
+The following proof shows that random variable distributions for resistance and conductance are congruent. This means that if we observe a certain cell-level variance for resistance, the same cell-level variance is applicable for the conductance analysis as well.
 
 \setlength{\fboxsep}{1em}
 \noindent
 \framebox[\textwidth][l]{\parbox{0.95\textwidth}{
-    For resistor R = 10 $k\Omega$ with 5\% tolerance, we can see it as a probability distribution with $\mu_R = 10000$ and $\sigma_R = 500$.
+    For resistor R = 10 $k\Omega$ with 5\% cell-level standard deviation, we can see it as a probability distribution with $\mu_R = 10000$ and $\sigma_R = 500$.
 
     \text{}
 
-    In other words, we have $\mu_R$ and $\sigma_R = T_R\cdot \mu_R$ if we let tolerance be $T_R$ (where $T_R$ = 0.05 for 5\%), 
+    In other words, we have $\mu_R$ and $\sigma_R = C_R\cdot \mu_R$ where $C_R$ represents the cell-level standard deviation and $\sigma_R$ represents the crossbar-level standard deviation. Here, $C_R$ = 0.05, \emph{or 5\%}. 
 
     \text{}
 
-    Likewise, for conductance G, we have $\mu_G = 1/\mu_R$ and $\sigma_G = T_G \cdot \mu_R$ with tolerance of $T_G$
+    Likewise, for conductance G, we have $\mu_G = 1/\mu_R$ and $\sigma_G = C_G \cdot \mu_R$, with $C_G$ to be determined.
 
     \text{}
 
-    \textbf{\underline{Proof that tolerance for R is the same as tolerance for G:}}
+    \textbf{\underline{Proof:}}
 
     \begin{align*} 
         \text{From transformation table: } \sigma_{G} &= \frac{\sigma_{R}}{\mu_R^2} \\
-        \text{Since } \sigma_R = T_R\cdot \mu_R \text { and } \sigma_G &= T_G\cdot \mu_G, \\
-        T_G\cdot \mu_G &= \frac{T_R \cdot \mu_R}{\mu_R^2} \\
-        T_G\cdot \mu_G &= \frac{T_R}{\mu_R}\\
+        \text{Since } \sigma_R = C_R\cdot \mu_R \text { and } \sigma_G &= C_G\cdot \mu_G, \\
+        C_G\cdot \mu_G &= \frac{C_R \cdot \mu_R}{\mu_R^2} \\
+        C_G\cdot \mu_G &= \frac{C_R}{\mu_R}\\
         \text{Since } \mu_G &= \frac{1}{\mu_R}, \\
-        \frac{T_G}{\mu_R} &= \frac{T_R}{\mu_R}\\
+        \frac{C_G}{\mu_R} &= \frac{C_R}{\mu_R}\\
         \\
         \text{Since }\mu_R &= R > 0, \\
-        \Rightarrow T_G &= T_R \text{ [Proven!] }
+        \Rightarrow C_G &= C_R \text{ [Proven!] }
     \end{align*}
 }}
 

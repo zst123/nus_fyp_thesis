@@ -10,16 +10,16 @@
 
 \noindent
 To analyse the effects as we scale up the \ac{CBA}, a Monte Carlo analysis is done.
-The memristor cells are set to have a Gaussian distribution with a standard deviation (this simulates the manufacturing tolerance).
+The memristor cells are set to have a Gaussian distribution with a standard deviation (this simulates the spread of values in the manufacturing process).
 Using these cells, a \ac{CBA} of desired size is generated and random input voltages are fed into the wordline.
 The results are read at the bitline and we will compute the error in the crossbar result (the deviation of the actual value from the theoretical value). This process is repeated to form a distribution of results, where the mean and standard deviation are measured.
 
 \subsection{Summary of simulation parameters}
 
 \begin{itemize}
-    \item \underline{Tolerance of the memristor cells}\\
-        \textbf{Monte Carlo Standard Deviation} \\
-            $\sigma$ = \{1\%,  5\%, 10\%, 15\%, 20\%, 25\%, 30\%\}
+    \item \underline{Standard Deviation of the memristor cells}\\
+        \textbf{Monte Carlo spread in terms of percentage} \\
+            ${\sigma / \mu}$ = \{1\%,  5\%, 10\%, 15\%, 20\%, 25\%, 30\%\}
     \item \underline{Size of Crossbar Array} \\
         \textbf{No. of wordlines} \\
         k = \{1, 2, 4, 8, 12, 16, 24, 32, 48, 64, 80, 96, 128, 256, 384, 512, 640, 768\}
