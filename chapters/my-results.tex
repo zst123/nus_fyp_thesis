@@ -1,0 +1,374 @@
+\SetPicSubDir{my-results}
+
+\chapter{Results}
+\label{ch:results}
+
+\vspace{1em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Characterisation of Noise in Hardware Circuit}
+\label{results:noisemodel}
+
+\noindent
+Due to manufacturing variations and non-ideal behaviour in the analog domain, there will be a deviation from expected results. We can treat this as a distribution of noise about the expected output. To characterise this behaviour, we will analyse the noise in the circuit with respect to the synaptic weights and the neuron in the neural network architecture (from \autoref{methodology:fig:hardware_feedforward_architecture}).
+
+\vspace{1em}
+
+\noindent
+The following is a summary of the sources of noise and how it relates to a neural network as simulated noisy layers.
+
+\begin{table}[h!]
+\begin{adjustwidth}{-0.15\textwidth}{-0.15\textwidth}
+    \resizebox{1.3\textwidth}{!}{
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \textbf{Source of "noise"} &
+            \textbf{Mapping in neural network} &
+            \textbf{Code implementation} \\
+            \hline
+            \hline
+            \multicolumn{3}{|l|}{\textbf{Neuron circuitry}} \\
+            \hline
+            Current-to-voltage conversion & Before activation function & 
+            \makecell{Keras:\\ \texttt{model.add(GaussianNoise(0.05))} \\
+            PyTorch:\\ \texttt{self.noise\_layer\_1 = GaussianNoise(sigma=0.05)}} \\
+            \hline
+            Activation function & Create custom activation function &
+            \makecell{Keras:\\ \texttt{model.add(Activation(\"{}custom\_activation\"{}))} \\
+            PyTorch:\\ \texttt{self.activation\_1 = MyCustomActivation()}} \\
+            \hline
+            \multicolumn{3}{|l|}{\textbf{Synaptic weights}} \\
+            \hline
+            Crossbar Array & Create noisy layer of weights &
+            \makecell{Keras:\\ \texttt{model.add(NoisyDense(50, sigma=0.05))} \\
+            PyTorch:\\ \texttt{self.hidden\_1 = NoisyLinear(10, 128, std\_init=0.05)}} \\
+            \hline
+        \end{tabular}
+    }
+\end{adjustwidth}
+\caption{Sources of noise in hardware}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Noise from crossbar array}
+
+\noindent
+To analyse the effects as we scale up the \ac{CBA}, a Monte Carlo analysis is done. Details of the simulation parameters and results are written in \fullref{appendix:simulation_results:cba_ns}.
+
+\newpage
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{mc_cba_dist}}
+    \caption{\Ac{PDF} plot for a Monte Carlo simulation of 5\% standard deviation}
+    \label{results:fig:mc_cba_dist}
+\end{figure}
+
+\noindent
+In \autoref{results:fig:mc_cba_dist}, the \ac{PDF} plot shows the distribution of the error in the crossbar result when the memristor cells are set with a standard deviation of 5\%.
+The distribution maintains a Gaussian shape even as the crossbar size is scaled up.
+With this, we can visualise the relationship between crossbar size and the mean or standard deviation as follows:
+
+\begin{figure}[!ht]
+    \centering
+    \includesvg[width=0.9\linewidth]{\Pic{svg}{chart_cba_mean_relationship}}
+    \parbox{0.7\textwidth}{\footnotesize \underline{Units:} \\ CBA Size (x-axis): no. of wordlines [dimensionless] \\ Mean (y-axis): current magnitude [amps]}
+    \caption{Behaviour of Mean as \ac{CBA} Size increases}
+    \label{results:fig:chart_cba_mean_relationship}
+\end{figure}%
+
+\begin{figure}[!ht]
+    \centering
+    \includesvg[width=0.9\linewidth]{\Pic{svg}{chart_cba_sd_relationship}}
+    \parbox{0.7\textwidth}{\footnotesize \underline{Units:} \\ CBA Size (x-axis): no. of wordlines [dimensionless] \\ Standard deviation (y-axis): current magnitude [amps]}
+    \caption{Behaviour of Standard Deviation as \ac{CBA} Size increases}
+    \label{results:fig:chart_cba_sd_relationship}
+\end{figure}
+
+\setlength{\fboxsep}{1em}
+\noindent
+\framebox[\textwidth][l]{\parbox{0.9\textwidth}{
+    \underline{\textbf{Observations:}}
+
+    \begin{enumerate}
+        \item The mean ($\mu$) increases linearly as the \ac{CBA} size (k) increases.
+        \item The standard deviation ($\sigma$) increases with the square-root of the \ac{CBA} size ($\sqrt{k}$).
+    \end{enumerate}
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mathematical analysis of scaling up the \ac{CBA}}
+
+\noindent
+In this section, a mathematical equation is derived to corroborate the empirical results in \autoref{results:fig:chart_cba_mean_relationship} and \autoref{results:fig:chart_cba_sd_relationship}.
+
+\noindent
+Consider a column in a crossbar which takes in an input vector $V_n$ and provides the result $I$. The resistances of the cell is $R_n$ which is a normal distribution with mean $\mu_{R_n} = R_n$ (nominal resistance) and relative standard deviation $\sigma_{R_n} = C\cdot R_n$.
+
+$$
+I = \left( \frac{V_1}{R_1} + \frac{V_2}{R_2} + ... \right)
+$$
+
+\noindent
+Here, we simplify the analysis to take the worst-case event occurring when voltages are at maximum:
+
+$$
+I = V \left( \frac{1}{R_1} + \frac{1}{R_2} + ... \right)
+$$
+
+\noindent
+The variance of a random variable is not affected by scalar multipliers. Hence, consider the distribution of the following expression only:
+
+$$
+\left( \frac{1}{R_1} + \frac{1}{R_2} + ... \right)
+$$
+
+\noindent
+The random variable distribution for resistance and conductance are equivalent (proof is written in \fullref{appendix:rv_distribution}). Thus, the resistance analysis is interchangeable with conductance.
+
+$$
+\Rightarrow \left[ G_1 + G_2 + ... \right]
+$$
+
+\noindent
+The mean for a particular crossbar size is the summation of that from all the conductances in the array, $\mu_G$:
+
+\begin{align*}
+    \mu_{CBA} &= \mu_{G1} + \mu_{G2} + ... \\
+    \mu_{CBA} &= \frac{1}{\mu_{R1}} + \frac{1}{\mu_{R1}} + ...
+\end{align*}
+
+\noindent
+The standard deviation for a particular crossbar size is:
+
+\begin{align*}
+    \sigma_{CBA}^2 &= \sigma_{G1}^2 + \sigma_{G2}^2 + ... \\
+    \sigma_{CBA}^2 &= (C\sigma_{G1})^2 + (C\sigma_{G2})^2 + ... \\
+    \sigma_{CBA}^2 &= (\frac{C}{\sigma_{R1}})^2 + (\frac{C}{\sigma_{R2}})^2 + ...
+\end{align*}
+
+\vspace{1em}
+
+\setlength{\fboxsep}{1em}
+\noindent
+\framebox[\textwidth][l]{\parbox{0.9\textwidth}{
+    \centering
+    \vspace{0.5em}
+    $$ \Rightarrow \sigma_{CBA} = \frac{\sqrt{k} \cdot C}{\mu_{R}} $$
+    where k is the number of rows of the crossbar
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Noise from neuron circuitry}
+
+\noindent
+In this section, the distribution in the current to voltage conversion is characterised. Additional noise is introduced due to variability in CMOS and passive components for the current-to-voltage converter circuit as illustrated in \autoref{methodology:fig:block_currentmirror_demo}.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.75\linewidth]{\Pic{png}{i2v_converter_dist}}
+    \caption{\Ac{PDF} plot of the current-to-voltage converter output for Monte Carlo simulation with 5\% standard deviation}
+    \label{results:fig:i2v_converter_dist}
+\end{figure}
+
+\noindent
+Using a 5\% standard deviation for all values of passive components and conductance parameter of the MOSFETs, the \ac{PDF} plot of the output voltage is obtained in \autoref{results:fig:i2v_converter_dist}. 
+
+\vspace{0.5em}
+
+\noindent
+Note that the desired behaviour of the current-to-voltage converter is a conversion ratio of ${1mA}:{1V}$. Based on the Monte Carlo simulations, the circuit exhibits a mean ($\mu$) scaling factor of ${1mA}:{0.953V}$ with standard deviation $\sigma$ of $4.0478 \times 10^{-2}V$.
+
+\noindent
+These parameters will be included in the noise model in \fullref{results:impl_of_noisy_bnn_model}.
+
+% However, the actual relationship has an upper bound of y = 1.0225x + 0.0335 and a lower bound of y = 0.971x + 0.0110. 
+% The distribution is Gaussian with a mean of 0.985 and a standard deviation of 0.0198 based on Monte Carlo simulations with a standard deviation of 0.05.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+\section{Limitations and impacts by hardware}
+
+\subsection{Theoretical limits in achieving memristor intermediate states}
+
+\noindent
+There is a limit to increase the quantisation levels of the \ac{CBA} by programming the memristors to intermediate states between the high- and low-resistance states. In essence, the number of bits that can be mapped to a memristor cell.
+
+\vspace{0.5em}
+
+\noindent\underline{\textbf{$\Rightarrow$ Modelling the theoretical limit:}}
+\vspace{0.2em}
+
+\noindent
+These are the main parameters affecting the theoretical limit as we scale the \ac{CBA}:
+
+\begin{itemize}
+    \item \textbf{Cell-level Standard Deviation:} Depending on the manufacturing process and technology used, there will be variability in the memristive values of the high- and low-resistance states. 
+    \item \textbf{Allowable $\sigma$ range:} Determines how strict or tolerant the acceptance criteria for a manufactured \ac{CBA} is. For example, if a $2\sigma$ range is allowed, it means that for every 100 crossbars manufactured, 5 are rejected as they fall outside the acceptable range (about 95.44\% of samples in a Gaussian distribution).
+\end{itemize}
+
+\noindent
+There are some simplifications in the model as it neglects several factors including:
+
+\begin{itemize}
+    \item \textbf{RRAM interconnect resistance:} Assumed to be zero because interconnect resistance is much smaller than memristor cell resistance.
+    
+    \item \textbf{\Ac{CBA} loading resistance:} Also assumed to be minimal since the current-to-voltage converter in \autoref{ch:methodology:currenttovoltageconversion} is designed to minimise loading effect.
+
+    \item \textbf{ADC/DAC conversion speed:} The maximum conversion rate and conversion noise are also not considered as it is assumed that there are no constraints for settling time of the output result.
+\end{itemize}
+
+\noindent
+Using the following relationship, we can predict the maximum number of bits that can be mapped to a memristor cell.
+
+$$ \Rightarrow \sigma_{CBA} = \frac{\sqrt{k} \cdot C}{\mu_{R}} $$
+
+\vspace{0.2em}
+
+\noindent
+Note that due to the simplifications and neglected factors above, the actual maximum bits will be lower than the projected numbers presented here. However, this serves as a useful best-case projection for future designs.
+
+\vspace{0.7em}
+\noindent\underline{\textbf{$\Rightarrow$ Projected maximum bits for hardware architecture:}}
+\vspace{0.2em}
+
+\noindent
+For the hardware architecture in \fullref{ch:framework}, the projected maximum bits can be compared to similar works. For a state-of-the-art comparison, researchers from Tsinghua University produced a 4-bit \ac{CBA} with a size of $50\times 50$ for a MNIST classifier accelerator \cite{PengGu2015}. 
+
+\begin{table}[]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}ccccc@{}}
+    \textbf{CBA Size} & \textbf{SD of CBA Result {[}A{]}} & \textbf{Quantization levels} & \textbf{No. of bits} & \textbf{Max no. of bits} \\ 
+    \Xhline{3\arrayrulewidth}
+    \rule{0pt}{0.3em}
+    1 & 1.17E-06 & 427.7777778 & 8.74 & 8 \\
+    2 & 1.65E-06 & 302.4845675 & 8.24 & 8 \\
+    4 & 2.34E-06 & 213.8888889 & 7.74 & 7 \\
+    8 & 3.31E-06 & 151.2422838 & 7.24 & 7 \\
+    %12 & 4.05E-06 & 123.4888076 & 6.95 & 6 \\
+    16 & 4.68E-06 & 106.9444444 & 6.74 & 6 \\
+    %24 & 5.73E-06 & 87.31977324 & 6.45 & 6 \\
+    32 & 6.61E-06 & 75.62114188 & 6.24 & 6 \\
+    48 & 8.10E-06 & 61.74440379 & 5.95 & 5 \\
+    \rowcolor{yellow} 50 & 8.26E-06 & 60.4969135 & 5.92 & 5 \\
+    64 & 9.35E-06 & 53.47222222 & 5.74 & 5 \\
+    80 & 1.05E-05 & 47.82700952 & 5.58 & 5 \\
+    96 & 1.15E-05 & 43.65988662 & 5.45 & 5 \\
+    128 & 1.32E-05 & 37.81057094 & 5.24 & 5 \\
+    256 & 1.87E-05 & 26.73611111 & 4.74 & 4 \\
+    384 & 2.29E-05 & 21.82994331 & 4.45 & 4 \\
+    512 & 2.64E-05 & 18.90528547 & 4.24 & 4 \\
+    %640 & 2.96E-05 & 16.90940138 & 4.08 & 4 \\
+    768 & 3.24E-05 & 15.43610095 & 3.95 & 3 \\
+    1024 & 3.74E-05 & 13.36805556 & 3.74 & 3 \\
+    4096 & 7.48E-05 & 6.684027778 & 2.74 & 2 \\
+    % 100 & 1.17E-05 & 42.77777778 & 5.42 & 5 \\
+    % 768 & 3.24E-05 & 15.43610095 & 3.95 & 3
+    \hline
+    \end{tabular}%
+    }
+    \caption{Theoretical maximum number of bits for a given CBA size. Cell-level $\sigma = (15\% \times \mu)$ and acceptance criteria of $2\sigma$ was chosen.}
+    \label{results:table:max_bits}
+\end{table}
+
+\noindent
+In \autoref{results:table:max_bits}, the memristor states are set to $R_{HRS} = 11 k\Omega$ and $R_{LRS} = 500 \Omega$ as per the device parameters by \citet{PengGu2015} \cite{PengGu2015}. A cell-level standard-deviation $\sigma = (15\% \times \mu)$ was chosen with an acceptance criteria of $2\sigma$.
+
+\vspace{0.5em}
+
+\noindent
+As highlighted in \autoref{results:table:max_bits}, the theoretical maximum is 5-bits  for a size-50 \ac{CBA}. Therefore, it shows that \citet{PengGu2015} \cite{PengGu2015} are working very closely to the technical limitations since they have achieved 4-bits in their work.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Hardware sigmoid limitations}
+
+\begin{figure}[!ht]
+    \begin{minipage}[b]{0.47\textwidth}
+        \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_fx}}
+        \caption{Comparison of the hardware sigmoid to the software sigmoid of $\beta=8$}
+        \label{results:fig:sigmoid_fx}
+    \end{minipage}%
+    \hspace{0.06\textwidth}
+    \begin{minipage}[b]{0.47\textwidth}
+        \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_grad}}
+        \caption{Comparison of the gradients of the hardware and software sigmoid}
+        \label{results:fig:sigmoid_grad}
+    \end{minipage}%
+\end{figure}
+
+\noindent
+With the hardware circuit formulated in \autoref{methodology:fig:schematic_neuron}, the activation function is configured to a sigmoid. The voltage-transfer graph is shown in \autoref{results:fig:sigmoid_fx}.
+
+\noindent
+Here, it is noted that the hardware sigmoid closely resembles the software sigmoid implementation if we set $\beta = 8$. The software sigmoid function is defined as:
+
+\vspace{1.5em}
+\centerline{
+    $\displaystyle f(x) = \frac{1}{1+e^{-\beta x}}$
+}
+\vspace{0.5em}
+\centerline{
+    $\text{where } \beta \text{ determines how steep the slope of the sigmoid is.}$
+}
+\vspace{0.7em}
+
+\noindent
+However, note that the gradient of the hardware sigmoid at $x = 0$ is almost vertical compared to the software sigmoid which has a more gentle slope. Shown in \autoref{results:fig:sigmoid_grad}, it gives rise to a gradient that very similarly approaches a dirac-delta impulse function. This makes the backpropagation a tricky operation in the analog domain, because the sharp increase in the magnitude may cause clipping if the result exceeds the supply voltage rails.
+
+\vspace{0.7em}
+\noindent\underline{\textbf{$\Rightarrow$ Performing backpropagation with psuedo-gradients:}}
+\vspace{0.2em}
+
+\begin{figure}[!ht]
+    \begin{minipage}[b]{0.47\textwidth}
+        \begin{subfigure}{\linewidth}
+            \centering
+            \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_grad}}
+            \caption{Without quantisation}
+            \label{results:fig:sigmoid_grad_a}
+        \end{subfigure}
+    \end{minipage}%
+    \hspace{0.06\textwidth}
+    \begin{minipage}[b]{0.47\textwidth}
+        \begin{subfigure}{\linewidth}
+            \centering
+            \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_grad_qnt100}}
+            \caption{12-bit quantisation}
+            \label{results:fig:sigmoid_grad_b}
+        \end{subfigure}
+    \end{minipage}%
+
+    \vspace{1em}
+
+    \begin{minipage}[b]{0.47\textwidth}
+        \begin{subfigure}{\linewidth}
+            \centering
+            \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_grad_qnt200}}
+            \caption{8-bit quantisation}
+            \label{results:fig:sigmoid_grad_c}
+        \end{subfigure}
+    \end{minipage}%
+    \hspace{0.06\textwidth}
+    \begin{minipage}[b]{0.47\textwidth}
+        \begin{subfigure}{\linewidth}
+            \centering
+            \includesvg[width=\linewidth]{\Pic{svg}{sigmoid_grad_qnt250}}
+            \caption{6-bit quantisation}
+            \label{results:fig:sigmoid_grad_d}
+        \end{subfigure}
+    \end{minipage}%
+
+    \caption{Effects of quantisation on the gradient of the sigmoid}
+    \label{results:fig:sigmoid_grad_overall}
+
+\end{figure}
+
+\noindent
+To circumvent the issue of the large gradient magnitude, psuedo-gradients can be used for backpropagation instead. Psuedo-gradient are commonly used as \acp{STE} for non-differentiable activation functions. \autoref{results:fig:sigmoid_grad_overall} shows that the gradient of the sigmoid converges to a rectangle function at low bit-precisions.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.70\linewidth]{\Pic{png}{sigmoid_ste}}
+    \caption{Usage of a \acf{STE} for sigmoid function}
+    \label{results:fig:sigmoid_ste}
+\end{figure}
