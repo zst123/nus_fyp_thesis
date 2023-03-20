@@ -1,0 +1,58 @@
+\section{Noise sensitivity analysis}
+\label{results:noise_sensitivity_analysis}
+
+\subsection{Implementation of noisy \ac{BNN} model}
+\label{results:impl_of_noisy_bnn_model}
+
+\noindent
+Firstly, a MNIST classifier model is trained on a $100 \times 50 \times 10$ \ac{BNN}. The noisy distribution characterised in \autoref{results:noisemodel} is cascaded after the \ac{CBA} weights.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{\Pic{png}{noisy_bnn_model}}
+    \caption{Noisy \ac{BNN} architecture of $100 \times 50 \times 10$. The noisy layers are cascaded after the weights}
+    \label{results:fig:trisurf_1}
+\end{figure}
+
+\noindent
+After which, noisy layers are introduced to observe how the test accuracy drops. The drop in feedforward accuracy is observed by varying parameters in the noisy layers. \autoref{results:fig:trisurf_1} shows the relationship between accuracy against the two parameters that affect the crossbar noise distribution.
+
+\vspace{0.5em}
+\setlength{\fboxsep}{1em}
+\noindent
+\framebox[\textwidth][l]{\parbox{0.9\textwidth}{
+    \underline{\textbf{Observations:}}
+
+    With the CBA programmed with the weights obtained from offline (or, off-chip) training:
+
+    \begin{enumerate}
+        \item Accuracy decreases as cell-level standard deviation (C) increases.
+        \item Accuracy decreases as the ratio of the high and low resistance state($\sfrac{R_{HRS}}{R_{LRS}}$) decreases.
+    \end{enumerate}
+}}
+
+\vspace{1em}
+
+\noindent
+Using \autoref{results:fig:trisurf_2}, we can choose the the maximum allowable loss in accuracy for the application and predict the required parameters for the system.
+
+\vspace{0.7em}
+
+\noindent
+Consider an allowable accuracy loss of 2\%, with a memristor device of $R_{HRS} = 11k\Omega$ and $R_{LRS} = 500\Omega$, the ratio is 22. From \autoref{results:fig:trisurf_2}, the allowable standard deviation is less than 20\%. Hence the designers must adhere to this constraint to maintain acceptable levels of performance.
+\vspace{0.7em}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.85\linewidth]{\Pic{png}{trisurf_1}}
+    \caption{3D Plot showing the relationship between test error, resistance state ratio and cell variations}
+    \label{results:fig:trisurf_1}
+\end{figure}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.85\linewidth]{\Pic{png}{trisurf_2}}
+    \caption{Plot loss of accuracy on the crossbar array.}
+    \parbox{0.65\textwidth}{\footnotesize Note: Black lines are 1\% intervals. Red lines are 5\% intervals.}
+    \label{results:fig:trisurf_2}
+\end{figure}

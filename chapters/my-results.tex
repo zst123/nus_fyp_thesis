@@ -160,6 +160,7 @@ The standard deviation for a particular crossbar size is:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Noise from neuron circuitry}
+\label{results:noise_from_neuron_circuitry}
 
 \noindent
 In this section, the distribution in the current to voltage conversion is characterised. Additional noise is introduced due to variability in CMOS and passive components for the current-to-voltage converter circuit as illustrated in \autoref{methodology:fig:block_currentmirror_demo}.
@@ -281,6 +282,7 @@ As highlighted in \autoref{results:table:max_bits}, the theoretical maximum is 5
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Hardware sigmoid limitations}
+\label{results:hardware_sigmoid_limitations}
 
 \begin{figure}[!ht]
     \begin{minipage}[b]{0.47\textwidth}
@@ -302,7 +304,7 @@ With the hardware circuit formulated in \autoref{methodology:fig:schematic_neuro
 \noindent
 Here, it is noted that the hardware sigmoid closely resembles the software sigmoid implementation if we set $\beta = 8$. The software sigmoid function is defined as:
 
-\vspace{1.5em}
+\vspace{1.3em}
 \centerline{
     $\displaystyle f(x) = \frac{1}{1+e^{-\beta x}}$
 }
@@ -315,7 +317,7 @@ Here, it is noted that the hardware sigmoid closely resembles the software sigmo
 \noindent
 However, note that the gradient of the hardware sigmoid at $x = 0$ is almost vertical compared to the software sigmoid which has a more gentle slope. Shown in \autoref{results:fig:sigmoid_grad}, it gives rise to a gradient that very similarly approaches a dirac-delta impulse function. This makes the backpropagation a tricky operation in the analog domain, because the sharp increase in the magnitude may cause clipping if the result exceeds the supply voltage rails.
 
-\vspace{0.7em}
+\vspace{0.5em}
 \noindent\underline{\textbf{$\Rightarrow$ Performing backpropagation with psuedo-gradients:}}
 \vspace{0.2em}
 
@@ -372,3 +374,5 @@ To circumvent the issue of the large gradient magnitude, psuedo-gradients can be
     \caption{Usage of a \acf{STE} for sigmoid function}
     \label{results:fig:sigmoid_ste}
 \end{figure}
+
+\input{chapters/my-results_noise-analysis.tex}
