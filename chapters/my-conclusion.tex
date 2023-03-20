@@ -1,0 +1,60 @@
+\SetPicSubDir{my-conclusion}
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+\vspace{2em}
+
+\section{Main contributions and learning points}
+
+%% Activation function, results
+%% Specific to this hardware architecture.
+%% effetcs on model test accuracy
+%% effects on theoretical maximum bits
+
+\noindent
+The main contributions of the thesis are as follows:
+
+\begin{itemize}
+
+    \item Projection of the theoretical maximum limits of bit precision/quantisation for the specific \ac{CBA} architecture from the noise characterisation in the circuitry
+
+    \item Evaluation of losses in the MNIST model test accuracy when model weights are placed into memristor \ac{CBA} \textemdash{} with the constraint of maintaining acceptable levels of performance and possible varying noise parameters.
+
+    \item Derivation of the neuron circuitry which includes configurable activation functions \textemdash{} including Sigmoid, Leaky-Relu, and Tanh function behaviours.
+
+\end{itemize}
+
+% The successful design and simulation of a memristor-based hardware accelerator for neural network operations
+% The demonstration of the ability of memristor crossbar arrays to perform matrix multiplications in the analog domain
+% The characterization of noise behavior in memristor crossbar arrays and neuron circuitry
+% The investigation of the impacts of hardware limitations on backpropagation algorithms
+
+\noindent
+Through the course of the research, an important learning point is the minimisation of loading effect on the \ac{CBA} in the design of the neuron circuitry. Special care had to be taken to work with low currents to minimise loading effect. The noise sensitivity analysis evaluated the feasibility of scaling up the crossbar array while maintaining acceptable levels of performance. In terms of achieving intermediate states in a memristor cell, it was observed that works by other authors such as \citet{PengGu2015} \cite{PengGu2015} are working very closely to theoretical limits of memristor \acp{CBA} given the manufacturing capabilities.
+
+% One of our key findings was that our hardware accelerator performed well when used to classify MNIST digits. We evaluated the performance of our accelerator by characterizing its circuit noise behavior and found that it was able to accurately classify MNIST digits with high accuracy.
+
+% To further assess the potential of our hardware accelerator for use in larger-scale neural network applications, we performed a statistical analysis to evaluate the feasibility of scaling up our crossbar array. Our analysis showed that it is possible to scale up our crossbar array for use in larger neural networks while maintaining acceptable levels of performance.
+
+\newpage
+
+\section{Areas of future research}
+
+\subsection{Investigating memristor-based \ac{ANN} operations}
+
+Another area of future research is to investigate other important \ac{ANN} operations that could be accelerated on a memristor \ac{CBA}. For example, batch normalisation (to normalise the inputs to each layer to have zero mean and unit variance), and convolution layers (a sliding window applied on the input data). These operations are not only expensive on digital \acp{CPU}, but also widely used in several well-known neural networks. Examples include ResNet, Inception, and DenseNet.
+
+\subsection{Further optimisations for neuron design}
+
+In \fullref{sec:methodology:hardware_architecture}, additional work can be done to further improve the performance and reduce its power consumption. For example, the active components used in the current-to-voltage converter could be updated to use FD-SOI technology to reduce leakage current. In addition, the FD-SOI technology has a lower parasitic capacitance which reduces the noise seen in \fullref{results:noise_from_neuron_circuitry}. Furthermore, a better approximation for the backpropagation \acp{STE} psuedo-gradient in \fullref{results:hardware_sigmoid_limitations} can be achieved with a swish function proposed by \citet{iEECON2022} \cite{iEECON2022}.
+
+% In terms of future research, there are several drawbacks directions that could be pursued. For example, further work could be done to optimize the design of our hardware accelerator to improve its performance and reduce its power consumption. Additionally, more research could be done to explore the use of memristor-based hardware accelerators in other types of neural network operations.
+
+\subsection{Integration between digital and analog domains}
+
+Currently, the design does not consider the data transfer overhead due to the analog-to-digital converter (ADC) and digital-to-analog converter (DAC). More research could be done to assess the stability of the data transfer at high clock rates, characterise the sampling noise, and noise-shaping techniques to counter it.
+
+\subsection{Area complexity of the memristor design}
+
+In \fullref{results:noisemodel}, the scalability of the design has only been evaluated with respect to the noise and error loss in a \ac{ANN} model. Due to the lack of data available about memristor manufacturing processes, the feasibility of scaling the silicon area/complexity has not been looked into.

@@ -78,6 +78,7 @@ Producing negative voltage is needed to perform the computation in \autoref{meth
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Hardware Architecture}
+\label{sec:methodology:hardware_architecture}
 
 \subsection{Overview of Hardware Accelerator}
 
@@ -245,7 +246,6 @@ Note that the allowable range is $\left(-V_{supply}+V_{TH}\right) < V_{INPUT} < 
 Some of the components like the current-to-voltage converter and the activation functions give an inverted output.
 Instead of using additional hardware circuit to invert it back to the intended polarity, one can train the \ac{ANN} model with a custom activation function set to the inverted function instead.
 Simply put, the weights for the subsequent stages will flip in polarity. Hence, we can remove these additional hardware circuit and save on area.
-This is explored further in \fullref{appendix:ste}.
 
 \section{Summary of neuron circuitry}
 
